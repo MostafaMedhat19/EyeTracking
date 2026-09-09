@@ -1,0 +1,60 @@
+<svg viewBox="0 0 900 736" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif">
+  <rect width="900" height="736" fill="#F7F9FC"/>
+
+  <!-- topbar -->
+  <circle cx="34" cy="38" r="6" fill="#D64545"/>
+  <text x="48" y="44" font-size="16" font-weight="800" fill="#17202A" letter-spacing="0.5">LIVE</text>
+  <text x="450" y="46" font-size="30" font-weight="800" fill="#16324F" text-anchor="middle" letter-spacing="-0.5">Eye Voice</text>
+  <circle cx="742" cy="38" r="5" fill="#1B7A50"/>
+  <text x="754" y="44" font-size="15" font-weight="800" fill="#1B7A50">TRACKING ACTIVE</text>
+
+  <!-- tracking panel -->
+  <rect x="30" y="70" width="840" height="330" rx="22" fill="#573B80"/>
+  <text x="54" y="105" font-size="15" font-weight="800" fill="#ffffff" letter-spacing="1">RECORDING EYE MOTION</text>
+  <text x="846" y="105" font-size="14" font-weight="600" fill="#ffffff" text-anchor="end" opacity="0.85">Tracking active</text>
+
+  <!-- up -->
+  <rect x="330" y="122" width="240" height="70" rx="16" fill="#ffffff" fill-opacity="0.16" stroke="#ffffff" stroke-opacity="0.32" stroke-width="2"/>
+  <text x="450" y="150" font-size="26" fill="#ffffff" text-anchor="middle">&#8593;</text>
+  <text x="450" y="170" font-size="11" font-weight="800" fill="#ffffff" text-anchor="middle" letter-spacing="1" opacity="0.85">LISTEN</text>
+
+  <!-- left -->
+  <rect x="90" y="200" width="150" height="120" rx="16" fill="#ffffff" fill-opacity="0.16" stroke="#ffffff" stroke-opacity="0.32" stroke-width="2"/>
+  <text x="165" y="252" font-size="26" fill="#ffffff" text-anchor="middle">&#8592;</text>
+  <text x="165" y="272" font-size="11" font-weight="800" fill="#ffffff" text-anchor="middle" letter-spacing="1" opacity="0.85">PREV</text>
+
+  <!-- camera frame -->
+  <rect x="260" y="200" width="380" height="120" rx="16" fill="#1f1530"/>
+  <circle cx="450" cy="260" r="16" fill="#ffffff"/>
+  <circle cx="450" cy="260" r="6" fill="#573B80"/>
+
+  <!-- right -->
+  <rect x="660" y="200" width="150" height="120" rx="16" fill="#ffffff" fill-opacity="0.16" stroke="#ffffff" stroke-opacity="0.32" stroke-width="2"/>
+  <text x="735" y="252" font-size="26" fill="#ffffff" text-anchor="middle">&#8594;</text>
+  <text x="735" y="272" font-size="11" font-weight="800" fill="#ffffff" text-anchor="middle" letter-spacing="1" opacity="0.85">NEXT</text>
+
+  <!-- down -->
+  <rect x="330" y="328" width="240" height="70" rx="16" fill="#00A896" stroke="#00A896" stroke-width="2"/>
+  <text x="450" y="356" font-size="26" fill="#ffffff" text-anchor="middle">&#8595;</text>
+  <text x="450" y="376" font-size="11" font-weight="800" fill="#ffffff" text-anchor="middle" letter-spacing="1">SELECT</text>
+
+  <!-- message section -->
+  <rect x="30" y="418" width="840" height="76" rx="14" fill="#ffffff" stroke="#2E9B6F" stroke-width="3"/>
+  <text x="54" y="444" font-size="12" font-weight="800" fill="#16324F" letter-spacing="1">MESSAGE</text>
+  <text x="54" y="474" font-size="28" font-weight="700" fill="#17202A">I NEED WATER</text>
+  <rect x="756" y="440" width="90" height="36" rx="10" fill="#ffffff" stroke="#16324F" stroke-width="2"/>
+  <text x="801" y="463" font-size="13" font-weight="800" fill="#16324F" text-anchor="middle">CLEAR</text>
+
+  <!-- listen action -->
+  <rect x="30" y="510" width="840" height="72" rx="16" fill="#2E9B6F"/>
+  <text x="450" y="556" font-size="28" font-weight="800" fill="#ffffff" text-anchor="middle">&#127908;  LISTEN</text>
+
+  <!-- quick words -->
+  <text x="30" y="618" font-size="19" font-weight="800" fill="#16324F" letter-spacing="0.5">QUICK WORDS</text>
+  <rect x="30" y="632" width="140" height="76" rx="18" fill="#7900e8"/>
+  <text x="100" y="678" font-size="30" fill="#ffffff" text-anchor="middle">&#8592;</text>
+  <rect x="182" y="626" width="536" height="88" rx="20" fill="#E9DDF5" stroke="#573B80" stroke-width="3"/>
+  <text x="450" y="682" font-size="34" font-weight="800" fill="#573B80" text-anchor="middle">YES</text>
+  <rect x="730" y="632" width="140" height="76" rx="18" fill="#7900e8"/>
+  <text x="800" y="678" font-size="30" fill="#ffffff" text-anchor="middle">&#8594;</text>
+</svg>

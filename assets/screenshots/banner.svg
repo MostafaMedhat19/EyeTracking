@@ -1,0 +1,35 @@
+<svg viewBox="0 0 1200 300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#16324F"/>
+      <stop offset="100%" stop-color="#573B80"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="40%" r="65%">
+      <stop offset="0%" stop-color="#00A896" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#00A896" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="300" fill="url(#bg)"/>
+  <rect width="1200" height="300" fill="url(#glow)"/>
+
+  <!-- decorative dot grid -->
+  <g fill="#ffffff" opacity="0.08">
+    <circle cx="60" cy="40" r="3"/><circle cx="100" cy="40" r="3"/><circle cx="140" cy="40" r="3"/>
+    <circle cx="60" cy="80" r="3"/><circle cx="100" cy="80" r="3"/><circle cx="140" cy="80" r="3"/>
+    <circle cx="1060" cy="230" r="3"/><circle cx="1100" cy="230" r="3"/><circle cx="1140" cy="230" r="3"/>
+    <circle cx="1060" cy="260" r="3"/><circle cx="1100" cy="260" r="3"/><circle cx="1140" cy="260" r="3"/>
+  </g>
+
+  <!-- eye mark -->
+  <g transform="translate(150,150)">
+    <circle r="58" fill="none" stroke="#DCEAF5" stroke-width="3" opacity="0.35"/>
+    <circle r="46" fill="#16324F" stroke="#DCEAF5" stroke-width="2.5"/>
+    <circle r="24" fill="#00A896"/>
+    <circle r="9" fill="#ffffff"/>
+    <circle cx="-6" cy="-6" r="3" fill="#DCEAF5" opacity="0.8"/>
+  </g>
+
+  <text x="250" y="140" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="64" font-weight="800" fill="#ffffff" letter-spacing="-1">Eye Voice</text>
+  <text x="252" y="180" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="24" font-weight="600" fill="#8fd9cc">Gaze-controlled assistive communication</text>
+  <text x="252" y="216" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif" font-size="16" font-weight="500" fill="#DCEAF5" opacity="0.85">Runs entirely in the browser · No camera data ever leaves the device</text>
+</svg>

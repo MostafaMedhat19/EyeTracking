@@ -3,7 +3,9 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Eye Voice — Assistive Communication</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='46' fill='%2316324F'/%3E%3Ccircle cx='50' cy='50' r='24' fill='%2300A896'/%3E%3Ccircle cx='50' cy='50' r='10' fill='%23fff'/%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='46' fill='%231E293B'/%3E%3Ccircle cx='50' cy='50' r='24' fill='%238B5CF6'/%3E%3Ccircle cx='50' cy='50' r='10' fill='%23fff'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@700;800&family=Plus+Jakarta+Sans:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css"><link rel="stylesheet" href="css/accessibility.css">
 </head>
 <body>
@@ -29,10 +31,10 @@
     </section>
     <p id="listenResult" class="listen-result" aria-live="polite"></p>
     <section class="word-section carousel-section"><h2>QUICK WORDS</h2><div id="quickCarousel" class="word-carousel" aria-label="Quick words slider"></div><button id="quickSelect" class="carousel-select full-select" data-gaze-target data-dwell-ms="3000" data-carousel="quick" data-select="true" aria-label="Select and speak this word">SELECT &amp; SPEAK<span>🔊↓</span></button></section>
-    <section class="settings"><h2>SETTINGS</h2><label>Dwell time <select id="dwellTime"><option value="700">700 ms</option><option value="800">800 ms</option><option value="1000" selected>1000 ms</option><option value="1200">1200 ms</option><option value="1500">1500 ms</option></select></label><label>Sensitivity <select id="sensitivity"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option></select></label><label>Voice <select id="voiceSelect"></select></label><label>Language <select id="language"><option value="en-US">English</option><option value="ar-EG">Arabic</option></select></label><span class="settings-divider" aria-hidden="true"></span><label>Gemini API key <input id="geminiApiKey" type="password" autocomplete="off" spellcheck="false" placeholder="Paste a new key"></label><span class="settings-divider" aria-hidden="true"></span><button id="recalibrate" data-gaze-target class="recalibrate">RECALIBRATE</button><button id="debugToggle" class="debug-toggle">Debug</button></section>
+    <section class="settings"><h2>SETTINGS</h2><label>Dwell time <select id="dwellTime"><option value="700">700 ms</option><option value="800">800 ms</option><option value="1000" selected>1000 ms</option><option value="1200">1200 ms</option><option value="1500">1500 ms</option></select></label><label>Sensitivity <select id="sensitivity"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option></select></label><label class="switch-field" title="Auto-highlight each direction in turn — confirm with a deliberate long blink instead of looking around">Scanning mode<input id="scanningMode" type="checkbox"><span class="switch-track" aria-hidden="true"></span></label><label>Voice <select id="voiceSelect"></select></label><label>Language <select id="language"><option value="en-US">English</option><option value="ar-EG">Arabic</option></select></label><span class="settings-divider" aria-hidden="true"></span><label>Gemini API key <input id="geminiApiKey" type="password" autocomplete="off" spellcheck="false" placeholder="Paste a new key"></label><span class="settings-divider" aria-hidden="true"></span><button id="recalibrate" data-gaze-target class="recalibrate">RECALIBRATE</button><button id="debugToggle" class="debug-toggle">Debug</button></section>
     <aside id="debugPanel" class="debug-panel" hidden aria-live="polite"></aside>
   </main>
   <div id="gazeCursor" aria-hidden="true"></div><div id="calibration" class="calibration" hidden><p id="calibrationText">Look at the dot</p><div id="calibrationDot"></div></div>
-  <script type="module" src="js/app.js?v=20260906-11"></script>
+  <script type="module" src="js/app.js?v=20260912-1"></script>
 </body>
 </html>

@@ -16,6 +16,20 @@ export function estimateGaze(points) {
   const left = eyeRatio(points, LEFT_EYE, LEFT_IRIS), right = eyeRatio(points, RIGHT_EYE, RIGHT_IRIS);
   return { x: (left.x + right.x) / 2, y: (left.y + right.y) / 2, left, right };
 }
+function eyeOpenness(points, eye) {
+  const eyePoints = eye.map(i => points[i]);
+  const minX = Math.min(...eyePoints.map(p => p.x)), maxX = Math.max(...eyePoints.map(p => p.x));
+  const minY = Math.min(...eyePoints.map(p => p.y)), maxY = Math.max(...eyePoints.map(p => p.y));
+  const width = maxX - minX;
+  return width ? (maxY - minY) / width : 0;
+}
+// Ratio of the eye contour's height to its width, from the same landmarks used for gaze.
+// It collapses toward 0 when the eyelids close, which is enough to detect a deliberate blink
+// without needing MediaPipe's separate (and heavier) blend-shape output.
+export function estimateEyeOpenness(points) {
+  if (!points || points.length < 478) return null;
+  return (eyeOpenness(points, LEFT_EYE) + eyeOpenness(points, RIGHT_EYE)) / 2;
+}
 export function smoothGaze(gaze, previous, alpha = .28) {
   if (!previous) return gaze;
   return { ...gaze, x: previous.x + (gaze.x - previous.x) * alpha, y: previous.y + (gaze.y - previous.y) * alpha };

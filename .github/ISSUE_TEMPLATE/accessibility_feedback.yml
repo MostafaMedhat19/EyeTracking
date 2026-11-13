@@ -1,0 +1,24 @@
+name: Accessibility feedback
+description: Share barriers, usability feedback, or assistive-technology observations
+title: "[Accessibility]: "
+labels: ["accessibility", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: "Lived-experience feedback is welcome. Share only what you are comfortable making public."
+  - type: textarea
+    id: barrier
+    attributes:
+      label: Barrier or experience
+      description: What was difficult, confusing, tiring, or inaccessible?
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Input method and environment
+      description: Browser, device, gaze/keyboard/speech input, and any relevant settings.
+  - type: textarea
+    id: improvement
+    attributes:
+      label: Suggested improvement

@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use Eye Voice in research or a project, please cite it as below."
+title: "Eye Voice: Browser-based gaze-controlled assistive communication"
+type: software
+authors:
+  - family-names: "Medhat"
+    given-names: "Mostafa"
+    alias: "MostafaMedhat19"
+repository-code: "https://github.com/MostafaMedhat19/EyeTracking"
+url: "https://github.com/MostafaMedhat19/EyeTracking"
+license: MIT
+version: 0.1.0
+date-released: 2026-11-13
+keywords:
+  - eye tracking
+  - assistive technology
+  - augmentative and alternative communication
+  - accessibility
+  - gaze interaction

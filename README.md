@@ -8,11 +8,13 @@
 [![MediaPipe Face Landmarker](https://img.shields.io/badge/MediaPipe-Face%20Landmarker-573B80?style=flat-square)](#)
 [![No build step](https://img.shields.io/badge/Build%20step-none-2E9B6F?style=flat-square)](#)
 [![Runs 100% in-browser](https://img.shields.io/badge/Runs-100%25%20in--browser-00A896?style=flat-square)](#)
-[![License](https://img.shields.io/badge/License-MIT-16324F?style=flat-square)](#license)
+[![License](https://img.shields.io/badge/License-MIT-16324F?style=flat-square)](LICENSE)
+[![Contributions welcome](https://img.shields.io/badge/Contributions-welcome-2563EB?style=flat-square)](CONTRIBUTING.md)
+[![Code of Conduct](https://img.shields.io/badge/Community-Code%20of%20Conduct-7C3AED?style=flat-square)](CODE_OF_CONDUCT.md)
 
 **A hands-free communication board for people with limited mobility — controlled entirely by looking up, down, left, or right.**
 
-[The problem](#the-problem-by-the-numbers) • [Features](#features) • [Scientific background](#scientific-background) • [How it works](#how-it-works) • [Getting started](#getting-started) • [Using Eye Voice](#using-eye-voice) • [Project structure](#project-structure) • [Privacy](#privacy--data-handling) • [References](#references)
+[The problem](#the-problem-by-the-numbers) • [Features](#features) • [How it works](#how-it-works) • [Getting started](#getting-started) • [Roadmap](ROADMAP.md) • [Contributing](CONTRIBUTING.md) • [References](#references)
 
 </div>
 
@@ -110,8 +112,8 @@ Eye Voice has **no build step and no dependencies to install** — it's plain HT
 ### Run locally
 
 ```bash
-git clone https://github.com/<your-username>/eye-voice.git
-cd eye-voice
+git clone https://github.com/MostafaMedhat19/EyeTracking.git
+cd EyeTracking
 python -m http.server 4173
 ```
 
@@ -149,7 +151,13 @@ Suggestions work fine without any setup — you'll get sensible offline keyword-
 ## Project structure
 
 ```
-Eye tracking/
+EyeTracking/
+├── .github/                   # Issue forms, PR template & quality checks
+├── CONTRIBUTING.md            # Contributor setup and quality checklist
+├── GOVERNANCE.md              # Project roles and decision process
+├── ROADMAP.md                 # Public priorities and contribution ideas
+├── SECURITY.md                # Responsible vulnerability reporting
+├── LICENSE                    # MIT license
 ├── index.html                 # App shell & markup
 ├── css/
 │   ├── style.css              # Layout, theme, camera panel, carousel
@@ -177,20 +185,30 @@ Eye tracking/
 - If you use **Listen**, the transcribed **text** (not audio or video) is sent to Google's Gemini API solely to generate reply suggestions. This only happens if you've provided your own API key.
 - No analytics, tracking, or third-party scripts are included beyond the MediaPipe model files (fetched from Google's CDN) and, optionally, the Gemini API call described above.
 
-## Roadmap ideas
+## Roadmap
 
-- [ ] Configurable word banks / custom vocabularies per user
-- [ ] Server-side proxy for the Gemini key so it never touches the client at all
-- [ ] Additional language support for speech recognition & synthesis
-- [ ] Session logging/export for caregivers (opt-in, local-only)
+The public roadmap lives in [`ROADMAP.md`](ROADMAP.md). It includes approachable starter tasks as well as longer-term accessibility, localization, testing, and privacy improvements. If you want to help but are unsure where to begin, open a discussion or choose an issue labeled [`good first issue`](https://github.com/MostafaMedhat19/EyeTracking/issues?q=is%3Aissue%20state%3Aopen%20label%3A%22good%20first%20issue%22).
 
 ## Contributing
 
-Issues and pull requests are welcome. Since this is a dependency-free static app, please keep changes framework-free and test in-browser before submitting (see [Getting started](#getting-started)).
+Contributions are welcome — code, accessibility testing, translations, documentation, clinical-context feedback, and UX research all help.
+
+1. Read [`CONTRIBUTING.md`](CONTRIBUTING.md).
+2. Check the [`ROADMAP.md`](ROADMAP.md) and existing [issues](https://github.com/MostafaMedhat19/EyeTracking/issues).
+3. Open an issue before a large change so we can align on scope.
+4. Submit a focused pull request using the included template.
+
+Participation is governed by our [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md). Project roles and decision-making are described in [`GOVERNANCE.md`](GOVERNANCE.md).
+
+## Project leadership & attribution
+
+Eye Voice was conceived, designed, and initially implemented by **[Mostafa Medhat](https://github.com/MostafaMedhat19)**, Founder and Lead Maintainer. Community contributions are welcomed and remain credited through Git history and release notes.
+
+The official project name, roadmap, and releases are stewarded under the process in [`GOVERNANCE.md`](GOVERNANCE.md). Academic or research use can cite the project using [`CITATION.cff`](CITATION.cff).
 
 ## License
 
-Distributed under the MIT License. See `LICENSE` for details (add one if it isn't present yet).
+Distributed under the [MIT License](LICENSE). Copyright and attribution notices must be preserved in copies and substantial portions of the software; see [`NOTICE`](NOTICE) for project attribution.
 
 ## References
 

@@ -1,0 +1,57 @@
+name: Quality checks
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check JavaScript syntax
+        shell: bash
+        run: |
+          for file in js/*.js; do
+            node --input-type=module --check < "$file"
+          done
+
+      - name: Check local HTML references
+        shell: python
+        run: |
+          from html.parser import HTMLParser
+          from pathlib import Path
+          from urllib.parse import urlparse
+
+          class References(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.values = []
+              def handle_starttag(self, tag, attrs):
+                  data = dict(attrs)
+                  for key in ("src", "href"):
+                      if key in data:
+                          self.values.append(data[key].split("?")[0])
+
+          parser = References()
+          parser.feed(Path("index.html").read_text(encoding="utf-8"))
+          missing = []
+          for value in parser.values:
+              parsed = urlparse(value)
+              if parsed.scheme or value.startswith(("#", "data:", "//")):
+                  continue
+              if not Path(value).exists():
+                  missing.append(value)
+          if missing:
+              raise SystemExit("Missing local references: " + ", ".join(missing))

@@ -208,7 +208,7 @@ Participation is governed by our [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md). Pro
 
 <div align="center">
   <a href="https://github.com/MostafaMedhat19/EyeTracking/graphs/contributors">
-    <img src="assets/contributor-map.svg" alt="World map highlighting the countries of EyeTracking contributors in green" width="100%">
+    <img src="assets/contributor-map.svg?v=2" alt="World map highlighting the countries of EyeTracking contributors in green" width="100%">
   </a>
   <br>
   <sub>Opt-in map · contributors add their two-letter country code to <a href="contributors-locations.json">contributors-locations.json</a></sub>
@@ -218,7 +218,7 @@ Participation is governed by our [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md). Pro
 
 <div align="center">
   <a href="https://github.com/MostafaMedhat19/EyeTracking/stargazers">
-    <img src="assets/star-history.svg" alt="EyeTracking GitHub star history" width="100%">
+    <img src="assets/star-history.svg?v=2" alt="EyeTracking GitHub star history" width="100%">
   </a>
   <br>
   <sub>Updated automatically every Monday · click the graph to meet the stargazers</sub>

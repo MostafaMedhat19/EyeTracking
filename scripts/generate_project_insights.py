@@ -17,11 +17,8 @@ def github(path, accept="application/vnd.github+json"): return get(f"https://api
 def shell(title, desc, body, width, height):
     return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img" aria-labelledby="title desc">
 <title id="title">{html.escape(title)}</title><desc id="desc">{html.escape(desc)}</desc><defs>
-<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#07111F"/><stop offset="1" stop-color="#0B1220"/></linearGradient>
-<linearGradient id="blue" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#0032F1"/><stop offset="1" stop-color="#22D3EE"/></linearGradient>
-<filter id="glow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-<style>text{{font-family:Inter,Segoe UI,Arial,sans-serif;fill:#F8FAFC}}.heading{{font-size:24px;font-weight:800}}.sub{{font-size:12px;fill:#8FA7C5}}.axis{{font-size:10px;fill:#7890AE}}</style></defs>
-<rect x="1" y="1" width="{width-2}" height="{height-2}" rx="22" fill="url(#bg)" stroke="#263957" stroke-width="2"/>{body}</svg>'''
+<style>text{{font-family:Segoe UI,Arial,sans-serif;fill:#f2f2f2}}.heading{{font-size:17px;font-weight:600;fill:#2f81f7}}.sub{{font-size:12px;fill:#58a6ff}}.axis{{font:12px 'Segoe Print','Comic Sans MS',cursive;fill:#f2f2f2}}</style></defs>
+<rect width="{width}" height="{height}" fill="#050505"/>{body}</svg>'''
 
 def star_history(repo, stars):
     created = datetime.fromisoformat(repo["created_at"].replace("Z", "+00:00")); now = datetime.now(timezone.utc)
@@ -36,11 +33,12 @@ def star_history(repo, stars):
         ratio=i/4; date=created+(now-created)*ratio
         labels.append(f'<text x="{left+width*ratio:.1f}" y="344" text-anchor="middle" class="axis">{date.strftime("%b %Y")}</text>')
     note='<text x="450" y="224" text-anchor="middle" class="sub">Be the first person to star this project</text>' if not stars else ''
-    body=f'''<circle cx="852" cy="46" r="48" fill="#0032F1" opacity=".13"/><text x="54" y="43" class="heading">STAR HISTORY</text>
-<text x="54" y="64" class="sub">Growth of the EyeTracking open-source community</text><text x="838" y="44" text-anchor="end" font-size="28" font-weight="800">★ {len(stars)}</text>
-<text x="838" y="64" text-anchor="end" class="sub">GitHub stars</text><line x1="62" y1="317" x2="838" y2="317" stroke="#263957"/><line x1="62" y1="214" x2="838" y2="214" stroke="#17263C"/><line x1="62" y1="112" x2="838" y2="112" stroke="#17263C"/>
-<polygon points="{left},{top+height} {line} {left+width},{top+height}" fill="#0032F1" opacity=".14"/><polyline points="{line}" fill="none" stroke="url(#blue)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>{note}{''.join(labels)}
-<text x="838" y="374" text-anchor="end" class="sub">Updated {now.strftime('%d %b %Y')}</text>'''
+    body=f'''<text x="450" y="36" text-anchor="middle" font-family="Segoe Print,Comic Sans MS,cursive" font-size="22" font-weight="700">Star History</text>
+<rect x="74" y="55" width="225" height="34" rx="4" fill="#090909" stroke="#f2f2f2"/><circle cx="92" cy="72" r="5" fill="#ff5a5f"/><text x="106" y="77" class="axis">{OWNER}/{REPO}</text>
+<line x1="62" y1="317" x2="838" y2="317" stroke="#f2f2f2" stroke-width="3"/><line x1="62" y1="105" x2="62" y2="317" stroke="#f2f2f2" stroke-width="3"/>
+<polyline points="{line}" fill="none" stroke="#ff5a5f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>{note}{''.join(labels)}
+<text x="45" y="321" text-anchor="end" class="axis">0</text><text x="45" y="112" text-anchor="end" class="axis">{max(len(stars),1)}</text>
+<text x="20" y="220" transform="rotate(-90 20 220)" text-anchor="middle" class="axis">GitHub Stars</text><text x="450" y="378" text-anchor="middle" class="axis">Timeline</text>'''
     return shell("EyeTracking star history", "GitHub stars over the lifetime of the project.", body, 900, 392)
 
 def path_for(rings):
@@ -63,12 +61,12 @@ def contributor_map(contributors, locations, countries):
         for polygon in polygons:
             path=path_for(polygon)
             if path:
-                fill,stroke=('#22C55E','#86EFAC') if selected else ('#17263C','#3A4E6A')
+                fill,stroke=('#22c55e','#86efac') if selected else ('#ffffff','#777777')
                 shapes.append(f'<path d="{path}" fill="{fill}" stroke="{stroke}" stroke-width=".45"/>')
     count=len([c for c in contributors if c['login']!='github-actions[bot]']); label=', '.join(sorted(names)) or 'Waiting for contributor locations'
-    body=f'''<text x="54" y="43" class="heading">CONTRIBUTOR ORIGINS</text><text x="54" y="64" class="sub">Countries turn green when contributors add their location to the project map</text>
-<text x="846" y="43" text-anchor="end" font-size="24" font-weight="800">{count}</text><text x="846" y="61" text-anchor="end" class="sub">contributors</text><g>{''.join(shapes)}</g>
-<circle cx="55" cy="446" r="7" fill="#22C55E"/><text x="70" y="450" class="sub">{html.escape(label)}</text><text x="846" y="450" text-anchor="end" class="sub">Public, opt-in country codes only</text>'''
+    body=f'''<text x="24" y="28" class="heading">☆ Contributors</text><text x="450" y="60" text-anchor="middle" class="sub">Contributor origins</text>
+<g>{''.join(shapes)}</g><circle cx="30" cy="452" r="6" fill="#22c55e"/><text x="45" y="456" class="sub">{html.escape(label)}</text>
+<text x="870" y="456" text-anchor="end" class="sub">{count} contributor{'s' if count != 1 else ''}</text>'''
     return shell("EyeTracking contributor origins", "A world map highlighting contributor countries in green.", body, 900, 470)
 
 def main():

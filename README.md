@@ -18,6 +18,14 @@
 
 <sub>Use Chrome or Edge, allow camera access, and keep your face well lit. Camera processing stays on your device.</sub>
 
+<br><br>
+
+<a href="assets/eye-voice-demo.mp4">
+  <img src="assets/eye-voice-demo.gif" alt="Eye Voice demo showing real-time iris tracking and gaze-controlled navigation between quick words" width="100%">
+</a>
+
+<sub>Live gaze-control demo · click the animation to watch the higher-quality MP4</sub>
+
 [The problem](#the-problem-by-the-numbers) • [Features](#features) • [How it works](#how-it-works) • [Getting started](#getting-started) • [Roadmap](ROADMAP.md) • [Contributing](CONTRIBUTING.md) • [References](#references)
 
 </div>
@@ -98,6 +106,12 @@ Eye Voice sits at the intersection of two established research areas: **appearan
 ## Preview
 
 <div align="center">
+<a href="https://mostafamedhat19.github.io/EyeTracking/">
+  <img src="assets/eye-voice-cover.jpg" alt="Eye Voice — communication beyond touch using browser-based eye tracking" width="100%">
+</a>
+
+<br><br>
+
 <img src="assets/screenshots/interface-preview.svg" alt="Eye Voice interface: live tracking panel with four directional targets around the camera view, current message bar, Listen action, and a quick-words carousel" width="720">
 
 <sub>UI preview — recreated from the live app for illustration. Run it locally to see your own camera feed and tracking overlay.</sub>

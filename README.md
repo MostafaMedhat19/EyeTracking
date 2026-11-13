@@ -204,6 +204,26 @@ Contributions are welcome — code, accessibility testing, translations, documen
 
 Participation is governed by our [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md). Project roles and decision-making are described in [`GOVERNANCE.md`](GOVERNANCE.md).
 
+## Project analytics
+
+<div align="center">
+  <a href="https://github.com/MostafaMedhat19/EyeTracking/pulse">
+    <img src="assets/project-insights.svg" alt="EyeTracking repository growth: stars, forks, open issues, contributors, releases, and commits over the last twelve weeks" width="100%">
+  </a>
+  <br>
+  <sub>Updated automatically every Monday · click the graph to open GitHub Insights</sub>
+</div>
+
+## Contributors
+
+<div align="center">
+  <a href="https://github.com/MostafaMedhat19/EyeTracking/graphs/contributors">
+    <img src="https://contrib.rocks/image?repo=MostafaMedhat19/EyeTracking" alt="EyeTracking contributors" loading="lazy">
+  </a>
+  <br>
+  <sub>Every contribution matters — code, documentation, testing, translation, accessibility feedback, and design.</sub>
+</div>
+
 ## Project leadership & attribution
 
 Eye Voice was conceived, designed, and initially implemented by **[Mostafa Medhat](https://github.com/MostafaMedhat19)**, Founder and Lead Maintainer. Community contributions are welcomed and remain credited through Git history and release notes.

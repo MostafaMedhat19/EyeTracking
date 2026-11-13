@@ -14,6 +14,10 @@
 
 **A hands-free communication board for people with limited mobility — controlled entirely by looking up, down, left, or right.**
 
+### [▶ Launch the live demo](https://mostafamedhat19.github.io/EyeTracking/)
+
+<sub>Use Chrome or Edge, allow camera access, and keep your face well lit. Camera processing stays on your device.</sub>
+
 [The problem](#the-problem-by-the-numbers) • [Features](#features) • [How it works](#how-it-works) • [Getting started](#getting-started) • [Roadmap](ROADMAP.md) • [Contributing](CONTRIBUTING.md) • [References](#references)
 
 </div>

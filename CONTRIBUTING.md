@@ -8,6 +8,7 @@ Thank you for helping make assistive communication more accessible. Contribution
 2. Search existing issues before opening a new one.
 3. For a substantial feature or architectural change, open a discussion issue before implementation.
 4. Look for issues labelled `good first issue` or `help wanted` if you are new to the project.
+5. To appear on the opt-in contributor map, add your GitHub username and two-letter country code to [`contributors-locations.json`](contributors-locations.json).
 
 ## Development setup
 

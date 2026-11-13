@@ -1,148 +1,80 @@
 #!/usr/bin/env python3
-"""Generate a self-contained GitHub-compatible SVG with repository insights."""
-
-from __future__ import annotations
-
-import json
-import os
-import subprocess
-import urllib.request
-from collections import Counter
-from datetime import datetime, timedelta, timezone
+"""Generate a star-history chart and contributor-origin map for the README."""
+import html, json, os, urllib.request
+from datetime import datetime, timezone
 from pathlib import Path
 
+OWNER, REPO = "MostafaMedhat19", "EyeTracking"
+MAP_DATA = "https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson"
 
-OWNER = "MostafaMedhat19"
-REPO = "EyeTracking"
-OUTPUT = Path("assets/project-insights.svg")
-WEEKS = 12
+def get(url, accept="application/vnd.github+json"):
+    headers = {"Accept": accept, "User-Agent": "EyeTracking-readme-visuals", "X-GitHub-Api-Version": "2022-11-28"}
+    if os.environ.get("GITHUB_TOKEN"): headers["Authorization"] = f"Bearer {os.environ['GITHUB_TOKEN']}"
+    with urllib.request.urlopen(urllib.request.Request(url, headers=headers), timeout=45) as response: return json.load(response)
 
+def github(path, accept="application/vnd.github+json"): return get(f"https://api.github.com{path}", accept)
 
-def api(path: str):
-    headers = {
-        "Accept": "application/vnd.github+json",
-        "User-Agent": "EyeTracking-insights-generator",
-        "X-GitHub-Api-Version": "2022-11-28",
-    }
-    token = os.environ.get("GITHUB_TOKEN")
-    if token:
-        headers["Authorization"] = f"Bearer {token}"
-    request = urllib.request.Request(f"https://api.github.com{path}", headers=headers)
-    with urllib.request.urlopen(request, timeout=30) as response:
-        return json.load(response)
+def shell(title, desc, body, width, height):
+    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img" aria-labelledby="title desc">
+<title id="title">{html.escape(title)}</title><desc id="desc">{html.escape(desc)}</desc><defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#07111F"/><stop offset="1" stop-color="#0B1220"/></linearGradient>
+<linearGradient id="blue" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#0032F1"/><stop offset="1" stop-color="#22D3EE"/></linearGradient>
+<filter id="glow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<style>text{{font-family:Inter,Segoe UI,Arial,sans-serif;fill:#F8FAFC}}.heading{{font-size:24px;font-weight:800}}.sub{{font-size:12px;fill:#8FA7C5}}.axis{{font-size:10px;fill:#7890AE}}</style></defs>
+<rect x="1" y="1" width="{width-2}" height="{height-2}" rx="22" fill="url(#bg)" stroke="#263957" stroke-width="2"/>{body}</svg>'''
 
+def star_history(repo, stars):
+    created = datetime.fromisoformat(repo["created_at"].replace("Z", "+00:00")); now = datetime.now(timezone.utc)
+    left, top, width, height = 62, 112, 776, 205; duration = max((now-created).total_seconds(), 1)
+    points = [(left, top+height)]
+    for i, event in enumerate(sorted(stars, key=lambda item:item["starred_at"]), 1):
+        date = datetime.fromisoformat(event["starred_at"].replace("Z", "+00:00"))
+        points.append((left+((date-created).total_seconds()/duration)*width, top+height-(i/max(len(stars),1))*height))
+    points.append((left+width, points[-1][1])); line = " ".join(f"{x:.1f},{y:.1f}" for x,y in points)
+    labels=[]
+    for i in range(5):
+        ratio=i/4; date=created+(now-created)*ratio
+        labels.append(f'<text x="{left+width*ratio:.1f}" y="344" text-anchor="middle" class="axis">{date.strftime("%b %Y")}</text>')
+    note='<text x="450" y="224" text-anchor="middle" class="sub">Be the first person to star this project</text>' if not stars else ''
+    body=f'''<circle cx="852" cy="46" r="48" fill="#0032F1" opacity=".13"/><text x="54" y="43" class="heading">STAR HISTORY</text>
+<text x="54" y="64" class="sub">Growth of the EyeTracking open-source community</text><text x="838" y="44" text-anchor="end" font-size="28" font-weight="800">★ {len(stars)}</text>
+<text x="838" y="64" text-anchor="end" class="sub">GitHub stars</text><line x1="62" y1="317" x2="838" y2="317" stroke="#263957"/><line x1="62" y1="214" x2="838" y2="214" stroke="#17263C"/><line x1="62" y1="112" x2="838" y2="112" stroke="#17263C"/>
+<polygon points="{left},{top+height} {line} {left+width},{top+height}" fill="#0032F1" opacity=".14"/><polyline points="{line}" fill="none" stroke="url(#blue)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>{note}{''.join(labels)}
+<text x="838" y="374" text-anchor="end" class="sub">Updated {now.strftime('%d %b %Y')}</text>'''
+    return shell("EyeTracking star history", "GitHub stars over the lifetime of the project.", body, 900, 392)
 
-def git_commit_dates(since: datetime) -> list[datetime]:
-    result = subprocess.run(
-        ["git", "log", f"--since={since.isoformat()}", "--format=%cI"],
-        check=True,
-        capture_output=True,
-        text=True,
-    )
-    return [datetime.fromisoformat(value) for value in result.stdout.splitlines() if value]
+def path_for(rings):
+    paths=[]
+    for ring in rings:
+        commands=[]
+        for i,(lon,lat,*_) in enumerate(ring):
+            x=32+((lon+180)/360)*836; y=82+((90-lat)/180)*340
+            commands.append(('M' if i==0 else 'L')+f'{x:.1f},{y:.1f}')
+        if commands: paths.append(' '.join(commands)+' Z')
+    return ' '.join(paths)
 
+def contributor_map(contributors, locations, countries):
+    active={code.upper() for login,code in locations.items() if any(c['login']==login for c in contributors)}; shapes=[]; names=[]
+    for feature in countries['features']:
+        props=feature['properties']; geometry=feature.get('geometry') or {}; code=props.get('ISO3166-1-Alpha-2','').upper(); polygons=geometry.get('coordinates',[])
+        if geometry.get('type')=='Polygon': polygons=[polygons]
+        selected=code in active
+        if selected: names.append(props.get('name',code))
+        for polygon in polygons:
+            path=path_for(polygon)
+            if path:
+                fill,stroke=('#22C55E','#86EFAC') if selected else ('#17263C','#3A4E6A')
+                shapes.append(f'<path d="{path}" fill="{fill}" stroke="{stroke}" stroke-width=".45"/>')
+    count=len([c for c in contributors if c['login']!='github-actions[bot]']); label=', '.join(sorted(names)) or 'Waiting for contributor locations'
+    body=f'''<text x="54" y="43" class="heading">CONTRIBUTOR ORIGINS</text><text x="54" y="64" class="sub">Countries turn green when contributors add their location to the project map</text>
+<text x="846" y="43" text-anchor="end" font-size="24" font-weight="800">{count}</text><text x="846" y="61" text-anchor="end" class="sub">contributors</text><g>{''.join(shapes)}</g>
+<circle cx="55" cy="446" r="7" fill="#22C55E"/><text x="70" y="450" class="sub">{html.escape(label)}</text><text x="846" y="450" text-anchor="end" class="sub">Public, opt-in country codes only</text>'''
+    return shell("EyeTracking contributor origins", "A world map highlighting contributor countries in green.", body, 900, 470)
 
-def collect():
-    now = datetime.now(timezone.utc)
-    start = (now - timedelta(weeks=WEEKS)).replace(hour=0, minute=0, second=0, microsecond=0)
-    repository = api(f"/repos/{OWNER}/{REPO}")
-    contributors = api(f"/repos/{OWNER}/{REPO}/contributors?per_page=100&anon=1")
-    releases = api(f"/repos/{OWNER}/{REPO}/releases?per_page=100")
+def main():
+    repo=github(f'/repos/{OWNER}/{REPO}'); stars=github(f'/repos/{OWNER}/{REPO}/stargazers?per_page=100','application/vnd.github.star+json')
+    contributors=github(f'/repos/{OWNER}/{REPO}/contributors?per_page=100'); countries=get(MAP_DATA); locations=json.loads(Path('contributors-locations.json').read_text(encoding='utf-8'))
+    Path('assets').mkdir(exist_ok=True); Path('assets/star-history.svg').write_text(star_history(repo,stars),encoding='utf-8'); Path('assets/contributor-map.svg').write_text(contributor_map(contributors,locations,countries),encoding='utf-8')
+    print('Generated star history and contributor map')
 
-    try:
-        commits = api(
-            f"/repos/{OWNER}/{REPO}/commits?since={start.isoformat().replace('+00:00', 'Z')}&per_page=100"
-        )
-        dates = [datetime.fromisoformat(item["commit"]["author"]["date"].replace("Z", "+00:00")) for item in commits]
-    except Exception:
-        dates = git_commit_dates(start)
-
-    weekly = Counter()
-    for date in dates:
-        index = max(0, min(WEEKS - 1, int((date - start).days // 7)))
-        weekly[index] += 1
-
-    return {
-        "stars": repository["stargazers_count"],
-        "forks": repository["forks_count"],
-        "issues": repository["open_issues_count"],
-        "contributors": len(contributors),
-        "releases": len(releases),
-        "latest": releases[0]["tag_name"] if releases else "—",
-        "weekly": [weekly[index] for index in range(WEEKS)],
-        "labels": [(start + timedelta(weeks=index)).strftime("%d %b") for index in range(WEEKS)],
-        "updated": now.strftime("%d %b %Y"),
-    }
-
-
-def render(data):
-    width, height = 900, 360
-    chart_left, chart_top, chart_width, chart_height = 54, 190, 792, 105
-    values = data["weekly"]
-    maximum = max(max(values), 1)
-    step = chart_width / (WEEKS - 1)
-    points = []
-    for index, value in enumerate(values):
-        x = chart_left + index * step
-        y = chart_top + chart_height - (value / maximum) * chart_height
-        points.append((x, y))
-    line = " ".join(f"{x:.1f},{y:.1f}" for x, y in points)
-    area = f"{chart_left},{chart_top + chart_height} {line} {chart_left + chart_width},{chart_top + chart_height}"
-
-    cards = [
-        ("STARS", data["stars"]),
-        ("FORKS", data["forks"]),
-        ("OPEN ISSUES", data["issues"]),
-        ("CONTRIBUTORS", data["contributors"]),
-        ("RELEASES", data["releases"]),
-        ("LATEST", data["latest"]),
-    ]
-    card_markup = []
-    card_width = 128
-    for index, (label, value) in enumerate(cards):
-        x = 54 + index * 132
-        card_markup.append(
-            f'<g transform="translate({x},76)"><rect width="{card_width}" height="72" rx="14" fill="#111827" stroke="#263957"/>'
-            f'<text x="14" y="24" class="label">{label}</text><text x="14" y="53" class="value">{value}</text></g>'
-        )
-
-    dots = "".join(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="4" fill="#22D3EE" stroke="#07111F" stroke-width="2"/>' for x, y in points)
-    labels = "".join(
-        f'<text x="{points[index][0]:.1f}" y="321" text-anchor="middle" class="axis">{label}</text>'
-        for index, label in enumerate(data["labels"])
-        if index % 2 == 0 or index == WEEKS - 1
-    )
-
-    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="900" height="360" viewBox="0 0 900 360" role="img" aria-labelledby="title desc">
-  <title id="title">EyeTracking project analytics</title>
-  <desc id="desc">Repository totals and commits over the last twelve weeks.</desc>
-  <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#07111F"/><stop offset="1" stop-color="#0B1220"/></linearGradient>
-    <linearGradient id="area" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#2563EB" stop-opacity=".55"/><stop offset="1" stop-color="#22D3EE" stop-opacity=".04"/></linearGradient>
-    <filter id="glow"><feGaussianBlur stdDeviation="4" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-    <style>
-      text {{ font-family: Inter, Segoe UI, Arial, sans-serif; fill: #F8FAFC }}
-      .heading {{ font-size: 22px; font-weight: 700 }} .sub {{ font-size: 12px; fill: #8FA7C5 }}
-      .label {{ font-size: 10px; font-weight: 700; letter-spacing: 1.1px; fill: #7DD3FC }}
-      .value {{ font-size: 22px; font-weight: 800 }} .axis {{ font-size: 9px; fill: #7890AE }}
-    </style>
-  </defs>
-  <rect x="1" y="1" width="898" height="358" rx="22" fill="url(#bg)" stroke="#263957" stroke-width="2"/>
-  <circle cx="855" cy="44" r="46" fill="#0032F1" opacity=".14"/><circle cx="818" cy="18" r="28" fill="#22D3EE" opacity=".08"/>
-  <text x="54" y="39" class="heading">PROJECT GROWTH</text>
-  <text x="54" y="58" class="sub">Live repository snapshot · updated {data['updated']}</text>
-  {''.join(card_markup)}
-  <text x="54" y="177" class="label">COMMITS · LAST 12 WEEKS</text>
-  <line x1="54" y1="295" x2="846" y2="295" stroke="#263957"/>
-  <line x1="54" y1="242" x2="846" y2="242" stroke="#17263C"/>
-  <polygon points="{area}" fill="url(#area)"/>
-  <polyline points="{line}" fill="none" stroke="#22D3EE" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
-  {dots}{labels}
-  <text x="846" y="342" text-anchor="end" class="sub">github.com/{OWNER}/{REPO}</text>
-</svg>'''
-
-
-if __name__ == "__main__":
-    OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    OUTPUT.write_text(render(collect()), encoding="utf-8")
-    print(f"Generated {OUTPUT}")
+if __name__=='__main__': main()

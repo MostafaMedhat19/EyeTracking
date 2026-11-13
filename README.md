@@ -204,14 +204,24 @@ Contributions are welcome — code, accessibility testing, translations, documen
 
 Participation is governed by our [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md). Project roles and decision-making are described in [`GOVERNANCE.md`](GOVERNANCE.md).
 
-## Project analytics
+## Community around the world
 
 <div align="center">
-  <a href="https://github.com/MostafaMedhat19/EyeTracking/pulse">
-    <img src="assets/project-insights.svg" alt="EyeTracking repository growth: stars, forks, open issues, contributors, releases, and commits over the last twelve weeks" width="100%">
+  <a href="https://github.com/MostafaMedhat19/EyeTracking/graphs/contributors">
+    <img src="assets/contributor-map.svg" alt="World map highlighting the countries of EyeTracking contributors in green" width="100%">
   </a>
   <br>
-  <sub>Updated automatically every Monday · click the graph to open GitHub Insights</sub>
+  <sub>Opt-in map · contributors add their two-letter country code to <a href="contributors-locations.json">contributors-locations.json</a></sub>
+</div>
+
+## Star history
+
+<div align="center">
+  <a href="https://github.com/MostafaMedhat19/EyeTracking/stargazers">
+    <img src="assets/star-history.svg" alt="EyeTracking GitHub star history" width="100%">
+  </a>
+  <br>
+  <sub>Updated automatically every Monday · click the graph to meet the stargazers</sub>
 </div>
 
 ## Contributors

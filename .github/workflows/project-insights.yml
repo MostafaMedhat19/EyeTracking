@@ -1,4 +1,4 @@
-name: Refresh project insights
+name: Refresh community visuals
 
 on:
   schedule:
@@ -17,19 +17,19 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Generate project analytics
+      - name: Generate star history and contributor map
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python scripts/generate_project_insights.py
 
       - name: Commit changed analytics
         run: |
-          if git diff --quiet -- assets/project-insights.svg; then
-            echo "Project analytics are already current."
+          if git diff --quiet -- assets/star-history.svg assets/contributor-map.svg; then
+            echo "Community visuals are already current."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add assets/project-insights.svg
-          git commit -m "chore: refresh project insights"
+          git add assets/star-history.svg assets/contributor-map.svg
+          git commit -m "chore: refresh community visuals"
           git push

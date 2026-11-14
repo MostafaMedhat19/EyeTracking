@@ -1,1 +1,525 @@
-[hidden]{display:none!important}.direction{position:relative;overflow:hidden}.direction.selected{background:var(--quaternary)!important;border-color:#fff!important;color:#fff!important}.full-select{width:100%;margin-top:17px;font-size:32px}button,select,input{font-family:inherit}button:focus-visible,select:focus-visible,input:focus-visible,[role=button]:focus-visible{outline:5px solid var(--ring);outline-offset:3px;box-shadow:var(--pop)}.word-button,.action-button,.clear-button,.recalibrate,.primary-action{touch-action:manipulation}.tracking-status.error{color:#fff}@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/*
+ * Eye Voice — Accessibility Enhancements
+ *
+ * Focus areas:
+ * - Keyboard navigation
+ * - Visible focus indicators
+ * - Assistive communication controls
+ * - Readable interaction states
+ * - High contrast and forced colors
+ * - Reduced motion
+ * - Touch and responsive accessibility
+ *
+ * This stylesheet extends css/style.css.
+ */
+
+/* ==========================================
+   1. ACCESSIBILITY DESIGN TOKENS
+   ========================================== */
+
+:root {
+  --a11y-focus-color: #ffdf4d;
+  --a11y-focus-dark: #172033;
+  --a11y-focus-width: 4px;
+  --a11y-focus-offset: 4px;
+
+  --a11y-focus-shadow:
+    0 0 0 2px #172033,
+    0 0 0 8px rgba(255, 223, 77, 0.9);
+
+  --a11y-focus-inset:
+    inset 0 0 0 3px #ffdf4d,
+    inset 0 0 0 6px #172033;
+
+  --a11y-target-size: 44px;
+  --a11y-transition-duration: 160ms;
+}
+
+/* ==========================================
+   2. GENERAL ACCESSIBILITY
+   ========================================== */
+
+[hidden] {
+  display: none !important;
+}
+
+button,
+select,
+input,
+textarea {
+  font-family: inherit;
+}
+
+button,
+select,
+input,
+[role="button"] {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:not(:disabled),
+[role="button"],
+select,
+input[type="checkbox"] {
+  cursor: pointer;
+}
+
+button:disabled,
+input:disabled,
+select:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+/* ==========================================
+   3. GLOBAL KEYBOARD FOCUS
+   ========================================== */
+
+:where(
+  button,
+  select,
+  input,
+  textarea,
+  a,
+  [role="button"],
+  [tabindex="0"]
+):focus-visible {
+  outline: var(--a11y-focus-width) solid
+    var(--a11y-focus-color);
+
+  outline-offset: var(--a11y-focus-offset);
+
+  box-shadow: var(--a11y-focus-shadow);
+
+  position: relative;
+  z-index: 5;
+}
+
+/*
+ * Explicit controls override the original
+ * :focus-visible rule from this file.
+ */
+
+button:focus-visible,
+select:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+[role="button"]:focus-visible {
+  outline: var(--a11y-focus-width) solid
+    var(--a11y-focus-color);
+
+  outline-offset: var(--a11y-focus-offset);
+
+  box-shadow: var(--a11y-focus-shadow);
+}
+
+/* ==========================================
+   4. DIRECTIONAL GAZE CONTROLS
+   ========================================== */
+
+.direction {
+  position: relative;
+  overflow: hidden;
+
+  cursor: pointer;
+
+  transition:
+    background-color var(--a11y-transition-duration) ease,
+    border-color var(--a11y-transition-duration) ease,
+    box-shadow var(--a11y-transition-duration) ease;
+}
+
+.direction:focus-visible {
+  outline: 2px solid #172033;
+  outline-offset: 1px;
+
+  box-shadow:
+    inset 0 0 0 4px #ffdf4d,
+    inset 0 0 0 7px #172033;
+
+  background: #31205f;
+  border-color: #ffffff;
+  color: #ffffff;
+
+  z-index: 10;
+}
+
+/* Keep direction labels recognizable on focus. */
+
+.direction:focus-visible .dir-icon {
+  color: #ffdf4d;
+}
+
+.direction:focus-visible .dir-label {
+  color: #ffffff;
+  opacity: 1;
+  font-weight: 800;
+}
+
+/* Clear state for an activated direction. */
+
+.direction.selected {
+  background: var(--quaternary) !important;
+  border-color: #ffffff !important;
+  color: #102a22 !important;
+}
+
+/* Distinguish keyboard focus from gaze selection. */
+
+.direction.selected:focus-visible {
+  outline: 2px solid #172033;
+  outline-offset: 1px;
+
+  box-shadow:
+    inset 0 0 0 4px #ffdf4d,
+    inset 0 0 0 7px #172033;
+}
+
+/* ==========================================
+   5. NEXT AND PREVIOUS CONTROLS
+   ========================================== */
+
+.direction.left:focus-visible,
+.direction.right:focus-visible {
+  background: #251747;
+  border: 3px solid #ffffff;
+
+  outline: 2px solid #172033;
+  outline-offset: 1px;
+
+  box-shadow:
+    inset 0 0 0 4px #ffdf4d,
+    inset 0 0 0 7px #172033;
+}
+
+.direction.left:focus-visible .dir-icon,
+.direction.right:focus-visible .dir-icon {
+  color: #ffdf4d;
+}
+
+/* ==========================================
+   6. QUICK WORDS ACCESSIBILITY
+   ========================================== */
+
+.word-button {
+  touch-action: manipulation;
+}
+
+.word-button:focus-visible {
+  outline: 4px solid #172033;
+  outline-offset: 4px;
+
+  box-shadow:
+    inset 0 0 0 3px #ffdf4d,
+    0 0 0 7px #ffdf4d;
+
+  background: #ede9fe;
+  color: #172033;
+
+  z-index: 5;
+}
+
+.word-button.selected {
+  background: var(--quaternary) !important;
+  color: #102a22 !important;
+}
+
+.full-select {
+  width: 100%;
+  margin-top: 17px;
+  font-size: 32px;
+}
+
+.carousel-select:focus-visible {
+  outline: 4px solid #172033;
+  outline-offset: 4px;
+
+  box-shadow:
+    0 0 0 7px #ffdf4d,
+    0 0 0 10px #172033;
+}
+
+/* ==========================================
+   7. PRIMARY ACTIONS
+   ========================================== */
+
+.action-button,
+.clear-button,
+.recalibrate,
+.primary-action,
+.carousel-select {
+  touch-action: manipulation;
+}
+
+.action-button:focus-visible,
+.primary-action:focus-visible,
+.recalibrate:focus-visible,
+.clear-button:focus-visible {
+  outline: 4px solid #ffdf4d;
+  outline-offset: 4px;
+
+  box-shadow:
+    0 0 0 3px #172033,
+    0 0 0 9px #ffdf4d;
+}
+
+.action-button:focus-visible,
+.primary-action:focus-visible {
+  background: #49318e;
+}
+
+.clear-button:focus-visible,
+.recalibrate:focus-visible {
+  background: #fff5bd;
+  color: #172033;
+}
+
+/* ==========================================
+   8. SETTINGS ACCESSIBILITY
+   ========================================== */
+
+.settings select,
+.settings input[type="text"],
+.settings input[type="password"] {
+  min-height: var(--a11y-target-size);
+}
+
+.settings select:focus-visible,
+.settings input[type="text"]:focus-visible,
+.settings input[type="password"]:focus-visible {
+  outline: 3px solid #172033;
+  outline-offset: 3px;
+
+  box-shadow: 0 0 0 6px #ffdf4d;
+
+  border-color: #172033;
+}
+
+.settings label {
+  line-height: 1.5;
+}
+
+/* ==========================================
+   9. SCANNING MODE SWITCH
+   ========================================== */
+
+.switch-field {
+  position: relative;
+}
+
+.switch-field input:focus-visible + .switch-track {
+  outline: 4px solid #172033;
+  outline-offset: 4px;
+
+  box-shadow:
+    0 0 0 7px #ffdf4d;
+
+  border-color: #172033;
+}
+
+.switch-field input:checked + .switch-track {
+  background: #d1fae5;
+}
+
+.switch-field input:checked + .switch-track::after {
+  background: #086b47;
+}
+
+/* ==========================================
+   10. MESSAGE AND STATUS READABILITY
+   ========================================== */
+
+.message-section output {
+  overflow-wrap: anywhere;
+  word-break: normal;
+
+  line-height: 1.35;
+}
+
+.message-section:focus-within {
+  border-color: #172033;
+}
+
+.tracking-status.error {
+  color: #ffffff;
+  background: #991b1b;
+  border-color: #450a0a;
+}
+
+.listen-result,
+.notice,
+#cameraMessage {
+  overflow-wrap: anywhere;
+}
+
+/* ==========================================
+   11. MINIMUM INTERACTIVE TARGETS
+   ========================================== */
+
+.clear-button,
+.recalibrate,
+.debug-toggle,
+.settings select {
+  min-height: var(--a11y-target-size);
+}
+
+.word-button,
+.action-button,
+.primary-action,
+.direction {
+  touch-action: manipulation;
+}
+
+/* ==========================================
+   12. TEXT SCALING SUPPORT
+   ========================================== */
+
+.message-content {
+  min-width: 0;
+}
+
+.settings {
+  min-width: 0;
+}
+
+.settings select,
+.settings input {
+  max-width: 100%;
+}
+
+/* ==========================================
+   13. REDUCED MOTION
+   ========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ==========================================
+   14. INCREASED CONTRAST
+   ========================================== */
+
+@media (prefers-contrast: more) {
+  :root {
+    --a11y-focus-width: 5px;
+  }
+
+  .direction:focus-visible {
+    outline: 5px solid #ffffff;
+    outline-offset: 4px;
+
+    box-shadow:
+      inset 0 0 0 4px #172033,
+      0 0 0 5px #172033,
+      0 0 0 10px #ffdf4d;
+  }
+
+  .settings select,
+  .settings input {
+    border-color: #172033;
+  }
+
+  .section-label,
+  .settings label {
+    color: #172033;
+  }
+
+  .word-button:focus-visible {
+    outline-width: 5px;
+  }
+}
+
+/* ==========================================
+   15. WINDOWS FORCED COLORS
+   ========================================== */
+
+@media (forced-colors: active) {
+  button:focus-visible,
+  select:focus-visible,
+  input:focus-visible,
+  [role="button"]:focus-visible,
+  .direction:focus-visible {
+    outline: 3px solid Highlight;
+    outline-offset: 4px;
+
+    box-shadow: none;
+
+    forced-color-adjust: auto;
+  }
+
+  .switch-field input:focus-visible + .switch-track {
+    outline: 3px solid Highlight;
+    outline-offset: 4px;
+    box-shadow: none;
+  }
+
+  .direction.selected {
+    border: 3px solid Highlight !important;
+  }
+}
+
+/* ==========================================
+   16. SMALL SCREEN ACCESSIBILITY
+   ========================================== */
+
+@media (max-width: 600px) {
+  .settings {
+    gap: 16px;
+  }
+
+  .settings label {
+    min-width: 0;
+  }
+
+  .message-section {
+    gap: 12px;
+  }
+
+  .message-section output {
+    font-size: clamp(20px, 5vw, 30px);
+  }
+
+  .word-button {
+    font-size: clamp(18px, 4vw, 32px);
+  }
+
+  .full-select {
+    font-size: clamp(20px, 5vw, 32px);
+  }
+
+  .direction:focus-visible {
+    outline-width: 3px;
+    outline-offset: 2px;
+  }
+}
+
+/* ==========================================
+   17. POINTER AND HOVER SUPPORT
+   ========================================== */
+
+@media (hover: hover) and (pointer: fine) {
+  .direction:hover:not(:focus-visible) {
+    border-color: #ffffff;
+  }
+
+  .word-button:hover:not(:focus-visible) {
+    border-color: #172033;
+  }
+}
+
+@media (pointer: coarse) {
+  .clear-button,
+  .recalibrate,
+  .settings select,
+  .debug-toggle {
+    min-height: 48px;
+  }
+}

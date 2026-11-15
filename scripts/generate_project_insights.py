@@ -172,7 +172,7 @@ def contributor_map(contributors, locations, countries):
 def main():
     repo=github(f'/repos/{OWNER}/{REPO}'); stars=github(f'/repos/{OWNER}/{REPO}/stargazers?per_page=100','application/vnd.github.star+json')
     contributors=github(f'/repos/{OWNER}/{REPO}/contributors?per_page=100'); countries=get(MAP_DATA); locations=json.loads(Path('contributors-locations.json').read_text(encoding='utf-8'))
-    Path('assets').mkdir(exist_ok=True); Path('assets/star-history.svg').write_text(star_history(repo,stars),encoding='utf-8'); Path('assets/contributor-map.svg').write_text(contributor_map(contributors,locations,countries),encoding='utf-8'); Path('assets/contributors.svg').write_text(contributor_gallery(contributors),encoding='utf-8')
+    Path('assets').mkdir(exist_ok=True); Path('assets/star-history.svg').write_text(star_history(repo,stars),encoding='utf-8'); Path('assets/contributor-countries.svg').write_text(contributor_map(contributors,locations,countries),encoding='utf-8'); Path('assets/contributors-gallery.svg').write_text(contributor_gallery(contributors),encoding='utf-8')
     print('Generated star history and contributor map')
 
 if __name__=='__main__': main()

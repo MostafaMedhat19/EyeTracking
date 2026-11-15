@@ -29,7 +29,6 @@ input {
   font-family: inherit;
 }
 
-.word-button,
 .action-button,
 .clear-button,
 .recalibrate,
@@ -140,10 +139,11 @@ input:focus-visible,
   }
 
   .direction.selected,
-  .word-button.selected {
-    background: Highlight !important;
-    color: HighlightText !important;
-    border-color: Highlight !important;
+  .carousel-control.selected,
+  .carousel-select.selected {
+  background: Highlight !important;
+  color: HighlightText !important;
+  border-color: Highlight !important;
   }
 
   .direction.selected .dir-icon,

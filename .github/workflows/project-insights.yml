@@ -1,12 +1,15 @@
 name: Refresh community visuals
 
 on:
+  push:
+    branches: [main]
   schedule:
-    - cron: "17 5 * * 1"
+    - cron: "17 5 * * *"
   workflow_dispatch:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   update:
@@ -22,14 +25,44 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python scripts/generate_project_insights.py
 
-      - name: Commit changed analytics
+      - name: Open or refresh the generated-data pull request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          if git diff --quiet -- assets/star-history.svg assets/contributor-countries.svg assets/contributors-gallery.svg; then
+          assets="assets/star-history.svg assets/contributor-countries.svg assets/contributors-gallery.svg"
+          if git diff --quiet -- $assets; then
             echo "Community visuals are already current."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add assets/star-history.svg assets/contributor-countries.svg assets/contributors-gallery.svg
+          git switch -C automation/community-visuals
+          git add $assets
           git commit -m "chore: refresh community visuals"
-          git push
+          git push --force origin HEAD:automation/community-visuals
+          cat > /tmp/community-visuals-pr.md <<'EOF'
+          ## What does this change?
+
+          Refreshes repository-owned community visuals from the current GitHub API data.
+
+          - Star and project activity
+          - Contributor countries and counts
+          - Contributor avatars and contribution counts
+
+          ## Testing
+
+          - [x] Generated directly from the GitHub API
+          - [x] Country overrides passed validation
+          - [x] No application source files changed
+
+          ## Privacy and safety
+
+          - [x] Uses public repository and contributor metadata only
+          - [x] Does not enable automatic merging
+          - [x] Does not modify branch protection
+          EOF
+          if gh pr view automation/community-visuals --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh pr edit automation/community-visuals --repo "$GITHUB_REPOSITORY" --title "chore: refresh community visuals" --body-file /tmp/community-visuals-pr.md
+          else
+            gh pr create --repo "$GITHUB_REPOSITORY" --base main --head automation/community-visuals --title "chore: refresh community visuals" --body-file /tmp/community-visuals-pr.md
+          fi

@@ -3,10 +3,10 @@
  * Eye Voice — Keyboard Focus Accessibility
  *
  * Improves keyboard focus visibility while preserving
- * the application's existing layout and visual design.
+ * the existing layout and application behavior.
  */
 
-/* Preserve existing application behavior */
+/* Existing accessibility behavior */
 
 [hidden] {
   display: none !important;
@@ -29,6 +29,7 @@ input {
   font-family: inherit;
 }
 
+.word-button,
 .action-button,
 .clear-button,
 .recalibrate,
@@ -40,7 +41,7 @@ input {
   color: #fff;
 }
 
-/* Selected state: dark text on green background */
+/* Selected directional control */
 
 .direction.selected {
   background: var(--quaternary) !important;
@@ -48,8 +49,11 @@ input {
   color: #102a22 !important;
 }
 
-.direction.selected {
-  border-color: #fff !important;
+/* Selected carousel control text contrast */
+
+.carousel-control.selected,
+.carousel-select.selected {
+  color: #102a22 !important;
 }
 
 /* General keyboard focus */
@@ -64,9 +68,8 @@ input:focus-visible,
 }
 
 /*
- * Directional controls:
- * Keep the prominent yellow indicator inside
- * the control to reduce overlap and clipping.
+ * Directional keyboard focus:
+ * Inset highlight reduces overlap with nearby controls.
  */
 
 .direction:focus-visible {
@@ -78,29 +81,18 @@ input:focus-visible,
     inset 0 0 0 7px #172033;
 }
 
-/*
- * Quick Words:
- * Use an inset focus indicator, preserving
- * the original button and selected colors.
- */
-
-
-
-/*
- * When a selected control also has keyboard
- * focus, preserve the readable dark text.
- */
+/* Preserve selected text visibility during focus */
 
 .direction.selected:focus-visible {
   color: #102a22 !important;
 }
 
-.direction.selected:focus-visible .dir-icon,
-.direction.selected:focus-visible .dir-label {
-  color: #102a22;
+.direction.selected .dir-icon,
+.direction.selected .dir-label {
+  color: inherit;
 }
 
-/* Scanning Mode: visible focus on switch track */
+/* Scanning Mode keyboard focus */
 
 .switch-field input:focus-visible + .switch-track {
   outline: 3px solid #172033;
@@ -126,7 +118,8 @@ input:focus-visible,
   button:focus-visible,
   select:focus-visible,
   input:focus-visible,
-  [role="button"]:focus-visible {
+  [role="button"]:focus-visible,
+  .direction:focus-visible {
     outline: 3px solid Highlight;
     outline-offset: 2px;
     box-shadow: none;
@@ -141,9 +134,9 @@ input:focus-visible,
   .direction.selected,
   .carousel-control.selected,
   .carousel-select.selected {
-  background: Highlight !important;
-  color: HighlightText !important;
-  border-color: Highlight !important;
+    background: Highlight !important;
+    color: HighlightText !important;
+    border-color: Highlight !important;
   }
 
   .direction.selected .dir-icon,

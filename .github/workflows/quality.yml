@@ -32,6 +32,9 @@ jobs:
       - name: Parse GitHub Actions workflows
         run: npm run check:workflows
 
+      - name: Validate contributor country overrides
+        run: python scripts/validate_contributor_locations.py
+
       - name: Check local HTML references
         shell: python
         run: |

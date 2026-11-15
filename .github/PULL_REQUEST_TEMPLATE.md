@@ -17,6 +17,8 @@
 - [ ] Tested with Gemini disabled
 - [ ] Tested reduced-motion behavior when relevant
 - [ ] Added screenshots or a recording for UI changes
+- [ ] Ran `npm test` locally, or explained why a check could not be run
+- [ ] Tested relevant gaze/camera/speech changes on a real device (not only with mocks)
 
 ## Privacy and safety
 
@@ -28,3 +30,10 @@
 - [ ] My change is focused and documented
 - [ ] I have read `CONTRIBUTING.md` and the Code of Conduct
 - [ ] I agree to license my contribution under the repository's MIT License
+
+## Automatic-merge safety
+
+- [ ] This PR does not rely on its title, labels, or this checklist to claim low risk
+- [ ] I understand that sensitive, mixed, large, or insufficiently tested changes require maintainer review
+
+<!-- The trusted workflow classifies the actual file list and diff. Contributor-supplied labels and declarations are never authorization to merge. -->

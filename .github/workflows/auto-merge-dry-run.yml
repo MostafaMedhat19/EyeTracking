@@ -1,0 +1,37 @@
+name: Safe auto-merge decision
+
+on:
+  workflow_run:
+    workflows: [PR readiness]
+    types: [completed]
+
+permissions:
+  actions: read
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: auto-merge-decision-${{ github.event.workflow_run.head_sha }}
+  cancel-in-progress: true
+
+jobs:
+  decide:
+    name: Safe auto-merge dry run
+    if: github.event.workflow_run.event == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out trusted policy from the default branch
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: main
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+
+      - name: Revalidate decision without merging
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/evaluate-auto-merge.mjs

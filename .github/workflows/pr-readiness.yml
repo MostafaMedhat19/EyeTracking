@@ -1,0 +1,37 @@
+name: PR readiness
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: pr-readiness-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  classify:
+    name: PR readiness
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out pull request for advisory classification
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+
+      - name: Classify changed files and diff
+        id: classify
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/github-pr-readiness.mjs
+
+      - name: Explain enforcement boundary
+        run: |
+          echo "This read-only workflow is advisory."
+          echo "The default-branch workflow independently revalidates the exact SHA, files, checks, mergeability, and review threads."

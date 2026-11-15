@@ -224,7 +224,7 @@ Participation is governed by our [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md). Pro
 
 <div align="center">
   <a href="https://github.com/MostafaMedhat19/EyeTracking/graphs/contributors">
-    <img src="assets/contributor-map.svg?v=3" alt="World map showing EyeTracking contributor counts and colors by country" width="100%">
+    <img src="assets/contributor-countries.svg" alt="World map showing EyeTracking contributor counts and colors by country" width="100%">
   </a>
   <br>
   <sub>Uses public GitHub profile locations when available · optional corrections live in <a href="contributors-locations.json">contributors-locations.json</a></sub>
@@ -244,7 +244,7 @@ Participation is governed by our [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md). Pro
 
 <div align="center">
   <a href="https://github.com/MostafaMedhat19/EyeTracking/graphs/contributors">
-    <img src="assets/contributors.svg?v=1" alt="EyeTracking contributors with GitHub avatars and contribution counts" width="100%">
+    <img src="assets/contributors-gallery.svg" alt="EyeTracking contributors with GitHub avatars and contribution counts" width="100%">
   </a>
   <br>
   <sub>Every contribution matters — code, documentation, testing, translation, accessibility feedback, and design.</sub>

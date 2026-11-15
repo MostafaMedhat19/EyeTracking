@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Generate a star-history chart and contributor-origin map for the README."""
-import html, json, os, urllib.request
+import html, json, os, re, urllib.request
+from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -51,23 +52,81 @@ def path_for(rings):
         if commands: paths.append(' '.join(commands)+' Z')
     return ' '.join(paths)
 
+def normalized(value):
+    return re.sub(r'[^a-z0-9]+', ' ', value.casefold()).strip()
+
+def country_lookup(countries):
+    codes = {}
+    for feature in countries['features']:
+        props = feature['properties']
+        code = props.get('ISO3166-1-Alpha-2', '').upper()
+        if not code:
+            continue
+        codes[normalized(code)] = code
+        for key in ('name', 'official_name', 'ISO3166-1-Alpha-3'):
+            if props.get(key):
+                codes[normalized(str(props[key]))] = code
+    codes.update({
+        'uk': 'GB', 'u k': 'GB', 'usa': 'US', 'u s a': 'US',
+        'uae': 'AE', 'u a e': 'AE', 'south korea': 'KR',
+    })
+    return codes
+
+def resolve_country(location, lookup):
+    if not location:
+        return None
+    parts = [normalized(part) for part in reversed(location.split(','))]
+    for part in parts:
+        if part in lookup:
+            return lookup[part]
+    value = normalized(location)
+    matches = [(len(name), code) for name, code in lookup.items() if len(name) >= 4 and re.search(rf'\b{re.escape(name)}\b', value)]
+    return max(matches, default=(0, None))[1]
+
+def contributor_countries(contributors, overrides, countries):
+    lookup = country_lookup(countries)
+    valid_codes = set(lookup.values())
+    counts, unknown = Counter(), 0
+    people = [c for c in contributors if c.get('type') != 'Bot' and not c['login'].endswith('[bot]')]
+    for contributor in people:
+        login = contributor['login']
+        override = str(overrides.get(login, '')).upper()
+        code = override if override in valid_codes else None
+        if not code:
+            profile = github(f'/users/{login}')
+            code = resolve_country(profile.get('location'), lookup)
+        if code:
+            counts[code] += 1
+        else:
+            unknown += 1
+    return people, counts, unknown
+
+def contributor_color(count):
+    if count >= 4:
+        return '#f97316', '#fdba74'
+    if count >= 2:
+        return '#eab308', '#fde047'
+    return '#22c55e', '#86efac'
+
 def contributor_map(contributors, locations, countries):
-    active={code.upper() for login,code in locations.items() if any(c['login']==login for c in contributors)}; shapes=[]; names=[]
+    people, counts, unknown = contributor_countries(contributors, locations, countries)
+    shapes=[]
     for feature in countries['features']:
         props=feature['properties']; geometry=feature.get('geometry') or {}; code=props.get('ISO3166-1-Alpha-2','').upper(); polygons=geometry.get('coordinates',[])
         if geometry.get('type')=='Polygon': polygons=[polygons]
-        selected=code in active
-        if selected: names.append(props.get('name',code))
+        count=counts.get(code, 0)
         for polygon in polygons:
             path=path_for(polygon)
             if path:
-                fill,stroke=('#22c55e','#86efac') if selected else ('#ffffff','#777777')
+                fill,stroke=contributor_color(count) if count else ('#ffffff','#777777')
                 shapes.append(f'<path d="{path}" fill="{fill}" stroke="{stroke}" stroke-width=".45"/>')
-    count=len([c for c in contributors if c['login']!='github-actions[bot]']); label=', '.join(sorted(names)) or 'Waiting for contributor locations'
+    total=len(people); unknown_label=f' · {unknown} unknown' if unknown else ''
     body=f'''<text x="24" y="28" class="heading">☆ Contributors</text><text x="450" y="60" text-anchor="middle" class="sub">Contributor origins</text>
-<g>{''.join(shapes)}</g><circle cx="30" cy="452" r="6" fill="#22c55e"/><text x="45" y="456" class="sub">{html.escape(label)}</text>
-<text x="870" y="456" text-anchor="end" class="sub">{count} contributor{'s' if count != 1 else ''}</text>'''
-    return shell("EyeTracking contributor origins", "A world map highlighting contributor countries in green.", body, 900, 470)
+<g>{''.join(shapes)}</g><circle cx="30" cy="452" r="6" fill="#22c55e"/><text x="43" y="456" class="sub">1</text>
+<circle cx="78" cy="452" r="6" fill="#eab308"/><text x="91" y="456" class="sub">2–3</text>
+<circle cx="142" cy="452" r="6" fill="#f97316"/><text x="155" y="456" class="sub">4+ contributors</text>
+<text x="870" y="456" text-anchor="end" class="sub">{total} contributor{'s' if total != 1 else ''}{unknown_label}</text>'''
+    return shell("EyeTracking contributor origins", "A world map colored by contributor count: green for one, yellow for two or three, and orange for four or more.", body, 900, 470)
 
 def main():
     repo=github(f'/repos/{OWNER}/{REPO}'); stars=github(f'/repos/{OWNER}/{REPO}/stargazers?per_page=100','application/vnd.github.star+json')

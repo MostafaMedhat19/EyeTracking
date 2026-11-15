@@ -227,7 +227,7 @@ Participation is governed by our [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md). Pro
     <img src="assets/contributor-map.svg?v=2" alt="World map highlighting the countries of EyeTracking contributors in green" width="100%">
   </a>
   <br>
-  <sub>Opt-in map · contributors add their two-letter country code to <a href="contributors-locations.json">contributors-locations.json</a></sub>
+  <sub>Uses public GitHub profile locations when available · optional corrections live in <a href="contributors-locations.json">contributors-locations.json</a></sub>
 </div>
 
 ## Star history

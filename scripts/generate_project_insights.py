@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Generate a star-history chart and contributor-origin map for the README."""
-import html, json, os, re, urllib.request
+import base64, html, json, math, os, re, urllib.request
 from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
@@ -15,10 +15,15 @@ def get(url, accept="application/vnd.github+json"):
 
 def github(path, accept="application/vnd.github+json"): return get(f"https://api.github.com{path}", accept)
 
+def binary(url):
+    request = urllib.request.Request(url, headers={"User-Agent": "EyeTracking-readme-visuals"})
+    with urllib.request.urlopen(request, timeout=45) as response:
+        return response.read(), response.headers.get_content_type()
+
 def shell(title, desc, body, width, height):
     return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img" aria-labelledby="title desc">
 <title id="title">{html.escape(title)}</title><desc id="desc">{html.escape(desc)}</desc><defs>
-<style>text{{font-family:Segoe UI,Arial,sans-serif;fill:#f2f2f2}}.heading{{font-size:17px;font-weight:600;fill:#2f81f7}}.sub{{font-size:12px;fill:#58a6ff}}.axis{{font:12px 'Segoe Print','Comic Sans MS',cursive;fill:#f2f2f2}}</style></defs>
+<style>text{{font-family:Segoe UI,Arial,sans-serif;fill:#f2f2f2}}.heading{{font-size:17px;font-weight:600;fill:#2f81f7}}.sub{{font-size:12px;fill:#58a6ff}}.count{{font-size:11px;fill:#8b949e}}.axis{{font:12px 'Segoe Print','Comic Sans MS',cursive;fill:#f2f2f2}}</style></defs>
 <rect width="{width}" height="{height}" fill="#050505"/>{body}</svg>'''
 
 def star_history(repo, stars):
@@ -108,30 +113,66 @@ def contributor_color(count):
         return '#eab308', '#fde047'
     return '#22c55e', '#86efac'
 
+def contributor_gallery(contributors):
+    people = [c for c in contributors if c.get('type') != 'Bot' and not c['login'].endswith('[bot]')]
+    columns = min(max(len(people), 1), 5)
+    rows = max(math.ceil(len(people) / 5), 1)
+    card_width, card_height = 160, 145
+    start_x = (900 - columns * card_width) / 2
+    clips, cards = [], []
+    for index, contributor in enumerate(people):
+        row, column = divmod(index, 5)
+        row_columns = min(5, len(people) - row * 5)
+        row_start = (900 - row_columns * card_width) / 2
+        center_x = row_start + column * card_width + card_width / 2
+        center_y = 72 + row * card_height
+        image, mime = binary(f"{contributor['avatar_url']}&s=128")
+        encoded = base64.b64encode(image).decode()
+        clips.append(f'<clipPath id="avatar-{index}"><circle cx="{center_x:.0f}" cy="{center_y}" r="48"/></clipPath>')
+        cards.append(
+            f'<circle cx="{center_x:.0f}" cy="{center_y}" r="51" fill="#0d1117" stroke="#2f81f7" stroke-width="2"/>'
+            f'<image href="data:{mime};base64,{encoded}" x="{center_x-48:.0f}" y="{center_y-48}" width="96" height="96" clip-path="url(#avatar-{index})"/>'
+            f'<text x="{center_x:.0f}" y="{center_y+70}" text-anchor="middle" class="sub">@{html.escape(contributor["login"])}</text>'
+            f'<text x="{center_x:.0f}" y="{center_y+87}" text-anchor="middle" class="count">{contributor.get("contributions", 0)} contribution{"s" if contributor.get("contributions", 0) != 1 else ""}</text>'
+        )
+    height = 170 + (rows - 1) * card_height
+    body = f'<defs>{"".join(clips)}</defs>{"".join(cards)}'
+    return shell("EyeTracking contributors", "GitHub contributors and their contribution counts.", body, 900, height)
+
 def contributor_map(contributors, locations, countries):
     people, counts, unknown = contributor_countries(contributors, locations, countries)
-    shapes=[]
+    shapes=[]; country_items=[]
     for feature in countries['features']:
         props=feature['properties']; geometry=feature.get('geometry') or {}; code=props.get('ISO3166-1-Alpha-2','').upper(); polygons=geometry.get('coordinates',[])
         if geometry.get('type')=='Polygon': polygons=[polygons]
         count=counts.get(code, 0)
+        if count:
+            country_items.append((props.get('name', code), count, contributor_color(count)[0]))
         for polygon in polygons:
             path=path_for(polygon)
             if path:
                 fill,stroke=contributor_color(count) if count else ('#ffffff','#777777')
                 shapes.append(f'<path d="{path}" fill="{fill}" stroke="{stroke}" stroke-width=".45"/>')
     total=len(people); unknown_label=f' · {unknown} unknown' if unknown else ''
+    country_items.sort(key=lambda item: (-item[1], item[0]))
+    legend=[]
+    for index, (name, count, color) in enumerate(country_items):
+        row, column = divmod(index, 4)
+        x, y = 30 + column * 215, 452 + row * 24
+        label = f'{name} — {count} contributor{"s" if count != 1 else ""}'
+        legend.append(f'<circle cx="{x}" cy="{y-4}" r="6" fill="{color}"/><text x="{x+13}" y="{y}" class="sub">{html.escape(label)}</text>')
+    legend_rows=max(math.ceil(len(country_items)/4), 1)
+    footer_y=456 + legend_rows * 24
+    map_height=footer_y + 14
     body=f'''<text x="24" y="28" class="heading">☆ Contributors</text><text x="450" y="60" text-anchor="middle" class="sub">Contributor origins</text>
-<g>{''.join(shapes)}</g><circle cx="30" cy="452" r="6" fill="#22c55e"/><text x="43" y="456" class="sub">1</text>
-<circle cx="78" cy="452" r="6" fill="#eab308"/><text x="91" y="456" class="sub">2–3</text>
-<circle cx="142" cy="452" r="6" fill="#f97316"/><text x="155" y="456" class="sub">4+ contributors</text>
-<text x="870" y="456" text-anchor="end" class="sub">{total} contributor{'s' if total != 1 else ''}{unknown_label}</text>'''
-    return shell("EyeTracking contributor origins", "A world map colored by contributor count: green for one, yellow for two or three, and orange for four or more.", body, 900, 470)
+<g>{''.join(shapes)}</g>{''.join(legend)}
+<text x="870" y="{footer_y}" text-anchor="end" class="sub">Total: {total} contributor{'s' if total != 1 else ''}{unknown_label}</text>'''
+    return shell("EyeTracking contributor origins", "A world map listing each contributor country, count, and intensity color.", body, 900, map_height)
 
 def main():
     repo=github(f'/repos/{OWNER}/{REPO}'); stars=github(f'/repos/{OWNER}/{REPO}/stargazers?per_page=100','application/vnd.github.star+json')
     contributors=github(f'/repos/{OWNER}/{REPO}/contributors?per_page=100'); countries=get(MAP_DATA); locations=json.loads(Path('contributors-locations.json').read_text(encoding='utf-8'))
-    Path('assets').mkdir(exist_ok=True); Path('assets/star-history.svg').write_text(star_history(repo,stars),encoding='utf-8'); Path('assets/contributor-map.svg').write_text(contributor_map(contributors,locations,countries),encoding='utf-8')
+    Path('assets').mkdir(exist_ok=True); Path('assets/star-history.svg').write_text(star_history(repo,stars),encoding='utf-8'); Path('assets/contributor-map.svg').write_text(contributor_map(contributors,locations,countries),encoding='utf-8'); Path('assets/contributors.svg').write_text(contributor_gallery(contributors),encoding='utf-8')
     print('Generated star history and contributor map')
 
 if __name__=='__main__': main()

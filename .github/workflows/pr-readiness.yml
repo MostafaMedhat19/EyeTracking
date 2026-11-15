@@ -1,0 +1,56 @@
+name: Pull request readiness
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  pr-readiness:
+    name: PR readiness
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate description and summarize review
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          CHANGED_FILES: ${{ github.event.pull_request.changed_files }}
+          ADDITIONS: ${{ github.event.pull_request.additions }}
+          DELETIONS: ${{ github.event.pull_request.deletions }}
+        shell: python
+        run: |
+          import os
+          from pathlib import Path
+
+          body = os.environ.get("PR_BODY", "")
+          title = os.environ.get("PR_TITLE", "").strip()
+          required = ("## What does this change?", "## Testing", "## Privacy and safety")
+          missing = [section for section in required if section.lower() not in body.lower()]
+          errors = []
+          if len(title) < 10:
+              errors.append("Use a descriptive PR title (at least 10 characters).")
+          if missing:
+              errors.append("Complete the PR template sections: " + ", ".join(missing))
+          if len(body.strip()) < 100:
+              errors.append("Explain the change and testing in the PR description.")
+          count = int(os.environ.get("CHANGED_FILES", "0"))
+          additions = int(os.environ.get("ADDITIONS", "0"))
+          deletions = int(os.environ.get("DELETIONS", "0"))
+          summary = [
+              "## Pull request review summary",
+              f"- Files changed: {count}",
+              f"- Lines added / removed: +{additions} / -{deletions}",
+              "- Automated checks do not replace manual accessibility, webcam, or privacy testing.",
+          ]
+          if count > 10 or additions + deletions > 500:
+              summary.append("- ⚠️ Large change: consider splitting the PR or explaining its scope.")
+          if errors:
+              summary.extend(["### Needs attention"] + [f"- {error}" for error in errors])
+          Path(os.environ["GITHUB_STEP_SUMMARY"]).write_text("\n".join(summary) + "\n", encoding="utf-8")
+          for error in errors:
+              print("::error::" + error)
+          if errors:
+              raise SystemExit(1)

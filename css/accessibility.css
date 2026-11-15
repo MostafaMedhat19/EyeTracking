@@ -1,1 +1,146 @@
-[hidden]{display:none!important}.direction{position:relative;overflow:hidden}.direction.selected{background:var(--quaternary)!important;border-color:#fff!important;color:#fff!important}.full-select{width:100%;margin-top:17px;font-size:32px}button,select,input{font-family:inherit}button:focus-visible,select:focus-visible,input:focus-visible,[role=button]:focus-visible{outline:5px solid var(--ring);outline-offset:3px;box-shadow:var(--pop)}.word-button,.action-button,.clear-button,.recalibrate,.primary-action{touch-action:manipulation}.tracking-status.error{color:#fff}@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/*
+ * Eye Voice — Keyboard Focus Accessibility
+ *
+ * Improves keyboard focus visibility while preserving
+ * the existing layout and application behavior.
+ */
+
+/* Existing accessibility behavior */
+
+[hidden] {
+  display: none !important;
+}
+
+.direction {
+  position: relative;
+  overflow: hidden;
+}
+
+.full-select {
+  width: 100%;
+  margin-top: 17px;
+  font-size: 32px;
+}
+
+button,
+select,
+input {
+  font-family: inherit;
+}
+
+.word-button,
+.action-button,
+.clear-button,
+.recalibrate,
+.primary-action {
+  touch-action: manipulation;
+}
+
+.tracking-status.error {
+  color: #fff;
+}
+
+/* Selected directional control */
+
+.direction.selected {
+  background: var(--quaternary) !important;
+  border-color: #fff !important;
+  color: #102a22 !important;
+}
+
+/* Selected carousel control text contrast */
+
+.carousel-control.selected,
+.carousel-select.selected {
+  color: #102a22 !important;
+}
+
+/* General keyboard focus */
+
+button:focus-visible,
+select:focus-visible,
+input:focus-visible,
+[role="button"]:focus-visible {
+  outline: 3px solid #172033;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px #ffdf4d;
+}
+
+/*
+ * Directional keyboard focus:
+ * Inset highlight reduces overlap with nearby controls.
+ */
+
+.direction:focus-visible {
+  outline: 2px solid #172033;
+  outline-offset: 1px;
+
+  box-shadow:
+    inset 0 0 0 4px #ffdf4d,
+    inset 0 0 0 7px #172033;
+}
+
+/* Preserve selected text visibility during focus */
+
+.direction.selected:focus-visible {
+  color: #102a22 !important;
+}
+
+.direction.selected .dir-icon,
+.direction.selected .dir-label {
+  color: inherit;
+}
+
+/* Scanning Mode keyboard focus */
+
+.switch-field input:focus-visible + .switch-track {
+  outline: 3px solid #172033;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px #ffdf4d;
+}
+
+/* Reduced motion */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Windows high contrast / forced colors */
+
+@media (forced-colors: active) {
+  button:focus-visible,
+  select:focus-visible,
+  input:focus-visible,
+  [role="button"]:focus-visible,
+  .direction:focus-visible {
+    outline: 3px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+
+  .switch-field input:focus-visible + .switch-track {
+    outline: 3px solid Highlight;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+
+  .direction.selected,
+  .carousel-control.selected,
+  .carousel-select.selected {
+    background: Highlight !important;
+    color: HighlightText !important;
+    border-color: Highlight !important;
+  }
+
+  .direction.selected .dir-icon,
+  .direction.selected .dir-label {
+    color: HighlightText;
+  }
+}

@@ -2,7 +2,9 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './tests/browser',
-  snapshotPathTemplate: '{testDir}/{testFilePath}-snapshots/{arg}{ext}',
+  // Font metrics differ between local Windows and GitHub's Linux runners.
+  // Keep reviewed baselines per platform instead of weakening the diff threshold.
+  snapshotPathTemplate: '{testDir}/{testFilePath}-snapshots/{arg}-{platform}{ext}',
   timeout: 30_000,
   expect: { timeout: 5_000, toHaveScreenshot: { maxDiffPixelRatio: 0.01 } },
   // Keep one deterministic browser flow against the lightweight static server.

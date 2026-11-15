@@ -237,7 +237,7 @@ Participation is governed by our [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md). Pro
     <img src="assets/star-history.svg?v=2" alt="EyeTracking GitHub star history" width="100%">
   </a>
   <br>
-  <sub>Updated automatically every Monday · click the graph to meet the stargazers</sub>
+  <sub>Generated from live GitHub data every day and after changes to main · click to view stargazers</sub>
 </div>
 
 ## Contributors

@@ -15,6 +15,16 @@ def get(url, accept="application/vnd.github+json"):
 
 def github(path, accept="application/vnd.github+json"): return get(f"https://api.github.com{path}", accept)
 
+def github_pages(path, accept="application/vnd.github+json"):
+    items, page = [], 1
+    while True:
+        separator = "&" if "?" in path else "?"
+        batch = github(f"{path}{separator}per_page=100&page={page}", accept)
+        items.extend(batch)
+        if len(batch) < 100:
+            return items
+        page += 1
+
 def binary(url):
     request = urllib.request.Request(url, headers={"User-Agent": "EyeTracking-readme-visuals"})
     with urllib.request.urlopen(request, timeout=45) as response:
@@ -26,8 +36,25 @@ def shell(title, desc, body, width, height):
 <style>text{{font-family:Segoe UI,Arial,sans-serif;fill:#f2f2f2}}.heading{{font-size:17px;font-weight:600;fill:#2f81f7}}.sub{{font-size:12px;fill:#58a6ff}}.count{{font-size:11px;fill:#8b949e}}.axis{{font:12px 'Segoe Print','Comic Sans MS',cursive;fill:#f2f2f2}}</style></defs>
 <rect width="{width}" height="{height}" fill="#050505"/>{body}</svg>'''
 
-def star_history(repo, stars):
+def star_history(repo, stars, contributor_count):
     created = datetime.fromisoformat(repo["created_at"].replace("Z", "+00:00")); now = datetime.now(timezone.utc)
+    updated = now.strftime("%d %b %Y · %H:%M UTC")
+    if not stars:
+        cards = [
+            ("STARS", repo.get("stargazers_count", 0), "#ff5a5f"),
+            ("FORKS", repo.get("forks_count", 0), "#a371f7"),
+            ("CONTRIBUTORS", contributor_count, "#22c55e"),
+            ("OPEN ISSUES", repo.get("open_issues_count", 0), "#eab308"),
+        ]
+        blocks = []
+        for index, (label, value, color) in enumerate(cards):
+            x = 34 + index * 215
+            blocks.append(f'<rect x="{x}" y="62" width="190" height="82" rx="12" fill="#0d1117" stroke="#30363d"/>'
+                          f'<text x="{x+16}" y="88" class="count">{label}</text>'
+                          f'<text x="{x+16}" y="126" font-size="29" font-weight="700" fill="{color}">{value}</text>')
+        body = f'''<text x="34" y="35" class="heading">Project activity</text><text x="866" y="35" text-anchor="end" class="count">Updated {updated}</text>
+{''.join(blocks)}<text x="450" y="178" text-anchor="middle" class="sub">Star history will appear automatically after the first star.</text>'''
+        return shell("EyeTracking project activity", "Live repository activity showing zero stars, forks, contributors, and open issues.", body, 900, 205)
     left, top, width, height = 62, 112, 776, 205; duration = max((now-created).total_seconds(), 1)
     points = [(left, top+height)]
     for i, event in enumerate(sorted(stars, key=lambda item:item["starred_at"]), 1):
@@ -38,11 +65,10 @@ def star_history(repo, stars):
     for i in range(5):
         ratio=i/4; date=created+(now-created)*ratio
         labels.append(f'<text x="{left+width*ratio:.1f}" y="344" text-anchor="middle" class="axis">{date.strftime("%b %Y")}</text>')
-    note='<text x="450" y="224" text-anchor="middle" class="sub">Be the first person to star this project</text>' if not stars else ''
     body=f'''<text x="450" y="36" text-anchor="middle" font-family="Segoe Print,Comic Sans MS,cursive" font-size="22" font-weight="700">Star History</text>
 <rect x="74" y="55" width="225" height="34" rx="4" fill="#090909" stroke="#f2f2f2"/><circle cx="92" cy="72" r="5" fill="#ff5a5f"/><text x="106" y="77" class="axis">{OWNER}/{REPO}</text>
 <line x1="62" y1="317" x2="838" y2="317" stroke="#f2f2f2" stroke-width="3"/><line x1="62" y1="105" x2="62" y2="317" stroke="#f2f2f2" stroke-width="3"/>
-<polyline points="{line}" fill="none" stroke="#ff5a5f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>{note}{''.join(labels)}
+<polyline points="{line}" fill="none" stroke="#ff5a5f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>{''.join(labels)}
 <text x="45" y="321" text-anchor="end" class="axis">0</text><text x="45" y="112" text-anchor="end" class="axis">{max(len(stars),1)}</text>
 <text x="20" y="220" transform="rotate(-90 20 220)" text-anchor="middle" class="axis">GitHub Stars</text><text x="450" y="378" text-anchor="middle" class="axis">Timeline</text>'''
     return shell("EyeTracking star history", "GitHub stars over the lifetime of the project.", body, 900, 392)
@@ -170,9 +196,10 @@ def contributor_map(contributors, locations, countries):
     return shell("EyeTracking contributor origins", "A world map listing each contributor country, count, and intensity color.", body, 900, map_height)
 
 def main():
-    repo=github(f'/repos/{OWNER}/{REPO}'); stars=github(f'/repos/{OWNER}/{REPO}/stargazers?per_page=100','application/vnd.github.star+json')
-    contributors=github(f'/repos/{OWNER}/{REPO}/contributors?per_page=100'); countries=get(MAP_DATA); locations=json.loads(Path('contributors-locations.json').read_text(encoding='utf-8'))
-    Path('assets').mkdir(exist_ok=True); Path('assets/star-history.svg').write_text(star_history(repo,stars),encoding='utf-8'); Path('assets/contributor-countries.svg').write_text(contributor_map(contributors,locations,countries),encoding='utf-8'); Path('assets/contributors-gallery.svg').write_text(contributor_gallery(contributors),encoding='utf-8')
+    repo=github(f'/repos/{OWNER}/{REPO}'); stars=github_pages(f'/repos/{OWNER}/{REPO}/stargazers','application/vnd.github.star+json')
+    contributors=github_pages(f'/repos/{OWNER}/{REPO}/contributors'); countries=get(MAP_DATA); locations=json.loads(Path('contributors-locations.json').read_text(encoding='utf-8'))
+    contributor_count=len([c for c in contributors if c.get('type') != 'Bot' and not c['login'].endswith('[bot]')])
+    Path('assets').mkdir(exist_ok=True); Path('assets/star-history.svg').write_text(star_history(repo,stars,contributor_count),encoding='utf-8'); Path('assets/contributor-countries.svg').write_text(contributor_map(contributors,locations,countries),encoding='utf-8'); Path('assets/contributors-gallery.svg').write_text(contributor_gallery(contributors),encoding='utf-8')
     print('Generated star history and contributor map')
 
 if __name__=='__main__': main()

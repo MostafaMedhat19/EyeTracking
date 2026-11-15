@@ -49,7 +49,7 @@ if (decision.reasons.length === 0) {
 
   const runs = await rest(`/actions/runs?head_sha=${expectedSha}&event=pull_request&per_page=100`);
   const requiredWorkflows = {};
-  for (const required of ['Quality checks', 'PR readiness']) {
+  for (const required of ['Quality checks', 'Pull request readiness']) {
     const matches = runs.workflow_runs.filter((run) => run.name === required && run.head_sha === expectedSha);
     requiredWorkflows[required] = matches.some((run) => run.status === 'completed' && run.conclusion === 'success');
   }

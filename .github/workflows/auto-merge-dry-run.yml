@@ -2,7 +2,7 @@ name: Safe auto-merge decision
 
 on:
   workflow_run:
-    workflows: [PR readiness]
+    workflows: [Pull request readiness]
     types: [completed]
 
 permissions:

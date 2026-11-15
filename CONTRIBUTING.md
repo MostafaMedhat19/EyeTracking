@@ -32,6 +32,16 @@ Open `http://localhost:4173` in Chrome or Edge and grant camera access.
 6. Commit with a clear message.
 7. Push your branch and open a pull request using the template.
 
+Run the complete local check suite before pushing:
+
+```bash
+npm ci
+npx playwright install chromium
+npm test
+```
+
+See [`docs/AUTO_MERGE.md`](docs/AUTO_MERGE.md) for the conservative risk policy. A green check does not guarantee automatic merging or prove that webcam behavior works on real devices.
+
 ## Accessibility checklist
 
 - All interactions must remain keyboard accessible.
@@ -49,6 +59,7 @@ Open `http://localhost:4173` in Chrome or Edge and grant camera access.
 - Add or update documentation for visible behavior changes.
 - Include screenshots or a short recording for UI changes.
 - Never commit API keys, camera recordings, personal medical information, or user transcripts.
+- Treat changes to gaze, calibration, dwell, camera, speech, privacy, accessibility, dependencies, tests, and automation as human-review changes.
 
 ## Decision making and attribution
 

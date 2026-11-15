@@ -2,11 +2,15 @@ name: Pull request readiness
 
 on:
   pull_request:
-    types: [opened, edited, synchronize, reopened]
+    types: [opened, edited, synchronize, reopened, ready_for_review]
 
 permissions:
   contents: read
   pull-requests: read
+
+concurrency:
+  group: pr-readiness-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
 
 jobs:
   pr-readiness:
@@ -46,7 +50,7 @@ jobs:
               "- Automated checks do not replace manual accessibility, webcam, or privacy testing.",
           ]
           if count > 10 or additions + deletions > 500:
-              summary.append("- ⚠️ Large change: consider splitting the PR or explaining its scope.")
+              summary.append("- Large change: consider splitting the PR or explaining its scope.")
           if errors:
               summary.extend(["### Needs attention"] + [f"- {error}" for error in errors])
           Path(os.environ["GITHUB_STEP_SUMMARY"]).write_text("\n".join(summary) + "\n", encoding="utf-8")
@@ -54,3 +58,21 @@ jobs:
               print("::error::" + error)
           if errors:
               raise SystemExit(1)
+
+      - name: Check out pull request for advisory classification
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+
+      - name: Classify changed files and diff
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/github-pr-readiness.mjs
+
+      - name: Explain enforcement boundary
+        run: |
+          echo "This read-only workflow is advisory."
+          echo "The default-branch workflow independently revalidates the exact SHA, files, checks, mergeability, and review threads."

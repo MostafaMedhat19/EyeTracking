@@ -28,6 +28,8 @@
 
 [The problem](#the-problem-by-the-numbers) • [Features](#features) • [How it works](#how-it-works) • [Getting started](#getting-started) • [Roadmap](ROADMAP.md) • [Contributing](CONTRIBUTING.md) • [References](#references)
 
+Maintainers and contributors can review the conservative [safe auto-merge policy](docs/AUTO_MERGE.md). The automation is currently in dry-run mode and cannot merge pull requests.
+
 </div>
 
 ---

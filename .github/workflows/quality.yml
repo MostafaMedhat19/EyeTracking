@@ -13,19 +13,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22
 
+      - name: Install locked test dependencies
+        run: npm ci
+
+      - name: Install Chromium for browser tests
+        run: npx playwright install --with-deps chromium
+
       - name: Check JavaScript syntax
-        shell: bash
-        run: |
-          for file in js/*.js; do
-            node --input-type=module --check < "$file"
-          done
+        run: npm run check:syntax
+
+      - name: Parse GitHub Actions workflows
+        run: npm run check:workflows
 
       - name: Check local HTML references
         shell: python
@@ -55,3 +60,17 @@ jobs:
                   missing.append(value)
           if missing:
               raise SystemExit("Missing local references: " + ", ".join(missing))
+
+      - name: Run deterministic unit and policy tests
+        run: npm run test:unit
+
+      - name: Run browser accessibility and visual regression tests
+        run: npm run test:browser
+
+      - name: Upload Playwright report on failure
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7

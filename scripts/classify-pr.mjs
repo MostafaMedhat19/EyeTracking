@@ -21,9 +21,9 @@ const ALWAYS_MANUAL = [
 ];
 
 const FORBIDDEN_DIFF = {
-  documentation: [/<script\b/i, /<iframe\b/i, /javascript:/i, /BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY/i],
-  css: [/@import\b/i, /url\s*\(\s*['"]?https?:/i, /expression\s*\(/i, /javascript:/i, /outline\s*:\s*(0|none)/i, /display\s*:\s*none/i, /visibility\s*:\s*hidden/i],
-  javascript: [/\b(fetch|XMLHttpRequest|WebSocket|eval|Function)\b/, /\b(document|window|navigator|localStorage|sessionStorage|speechSynthesis)\b/, /innerHTML|outerHTML|insertAdjacentHTML/]
+  documentation: [/<(?:script|iframe|object|embed)\b/i, /\son\w+\s*=/i, /javascript:/i, /data\s*:\s*text\/html/i, /BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY/i],
+  css: [/@import\b/i, /url\s*\(\s*['"]?https?:/i, /expression\s*\(/i, /javascript:/i, /outline\s*:\s*(0|none)/i, /display\s*:\s*none/i, /visibility\s*:\s*hidden/i, /pointer-events\s*:\s*none/i, /content-visibility\s*:\s*hidden/i],
+  javascript: [/\b(fetch|XMLHttpRequest|WebSocket|eval|Function)\b/, /\b(document|window|navigator|globalThis|localStorage|sessionStorage|speechSynthesis)\b/, /innerHTML|outerHTML|insertAdjacentHTML/, /\bimport\s*\(/, /\brequire\s*\(/, /\b(Date|crypto|setTimeout|setInterval|queueMicrotask|process|Deno)\b/, /Math\.random\b/, /(?:__proto__|\.prototype\b|\.constructor\b)/]
 };
 
 const LIMITS = {

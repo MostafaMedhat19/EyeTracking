@@ -16,6 +16,7 @@ test('allows covered CSS but rejects accessibility-hiding CSS', () => {
   assert.equal(classifyPullRequest([changed('css/style.css', '@@\n+.card { gap: 1rem; }')]).eligible, true);
   const hidden = classifyPullRequest([changed('css/style.css', '@@\n+.focus-ring { outline: none; }')]);
   assert.equal(hidden.eligible, false);
+  assert.equal(classifyPullRequest([changed('css/accessibility.css', '@@\n+.button { pointer-events: none; }')]).eligible, false);
 });
 
 test('allows only the explicitly covered non-sensitive JavaScript module', () => {
@@ -23,6 +24,16 @@ test('allows only the explicitly covered non-sensitive JavaScript module', () =>
   assert.equal(classifyPullRequest([changed('js/dwellSelection.js')]).eligible, false);
   assert.equal(classifyPullRequest([changed('js/camera.js')]).eligible, false);
   assert.equal(classifyPullRequest([changed('js/suggestions.js', '@@\n+fetch("https://example.com")')]).eligible, false);
+  assert.equal(classifyPullRequest([changed('js/suggestions.js', '@@\n+window["fetch"]("https://example.com")')]).eligible, false);
+  assert.equal(classifyPullRequest([changed('js/suggestions.js', '@@\n+import("./camera.js")')]).eligible, false);
+  assert.equal(classifyPullRequest([changed('js/suggestions.js', '@@\n+const value = Math.random()')]).eligible, false);
+  assert.equal(classifyPullRequest([changed('js/suggestions.js', '@@\n+globalThis["fetch"]("https://example.com")')]).eligible, false);
+});
+
+test('rejects misleading executable documentation and unsafe file metadata', () => {
+  assert.equal(classifyPullRequest([changed('README.md', '@@\n+<img src=x onerror="alert(1)">')]).eligible, false);
+  assert.equal(classifyPullRequest([{ ...changed('README.md'), status: 'renamed' }]).eligible, false);
+  assert.equal(classifyPullRequest([{ ...changed('README.md'), patch: undefined }]).eligible, false);
 });
 
 test('holds workflows, dependencies, tests, mixed, missing, and oversized diffs', () => {

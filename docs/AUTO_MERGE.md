@@ -43,13 +43,14 @@ npm run test:browser -- --update-snapshots
 ## Workflow separation
 
 - `Quality checks` runs untrusted PR code with read-only repository access.
-- `PR readiness` classifies the PR with read-only access and writes only an Actions summary.
-- `Safe auto-merge decision` runs after `PR readiness`, checks out policy from `main`, re-fetches GitHub state, and produces a dry-run decision. It never trusts contributor labels, descriptions, workflow edits, or artifacts as authorization.
+- `Pull request readiness` produces the actual `PR readiness` check run with read-only access and writes only an Actions summary.
+- `Quality checks` produces the actual `validate` check run.
+- `Safe auto-merge decision` runs after either testing workflow completes, checks out policy from `main`, re-fetches GitHub state, and produces a dry-run decision. It binds each required check to the expected workflow path, check suite, GitHub Actions app, and exact PR head SHA. It never trusts contributor labels, descriptions, workflow edits, or artifacts as authorization.
 - No `pull_request_target` workflow is used.
 
 ## Disable or troubleshoot
 
-To disable decisions immediately, disable the **Safe auto-merge decision** workflow in GitHub Actions. `Quality checks` and `PR readiness` can continue protecting PRs.
+To disable decisions immediately, disable the **Safe auto-merge decision** workflow in GitHub Actions. The `validate` and `PR readiness` checks can continue protecting PRs.
 
 When a PR is held, inspect the workflow summary. Common causes include a protected path, mixed categories, size limits, forbidden diff patterns, a changed head SHA, failed/missing workflows, merge conflicts, draft status, or unresolved review threads.
 
@@ -61,3 +62,7 @@ When a PR is held, inspect the workflow summary. Common causes include a protect
 4. Identify the policy gap, add a regression fixture, and keep dry-run mode enabled until the fix is reviewed.
 
 Branch protection remains the final authority. The automation must never bypass required checks, required reviews, or protected-branch rules.
+
+## Repository ruleset check names
+
+GitHub rulesets require **job check-run names**, not workflow display names. For this repository the GitHub Actions check runs are `PR readiness` and `validate`. A ruleset entry named `Quality checks` refers only to the workflow display name and will remain pending because no check run has that name. Maintainers must verify the GitHub Actions integration is selected for both required contexts whenever the ruleset is edited.

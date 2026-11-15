@@ -4,14 +4,20 @@ import { getSuggestions } from '../../js/suggestions.js';
 
 test('suggestions are deterministic and safe for an empty message', () => {
   const result = getSuggestions('', '');
-  assert.ok(Array.isArray(result));
-  assert.ok(result.length >= 4);
+  assert.deepEqual(result, ['YES', 'NO', 'HELP', 'THANK YOU']);
+  assert.deepEqual(getSuggestions('', ''), result);
   assert.ok(result.every((item) => typeof item === 'string' && item.trim().length > 0));
 });
 
-test('suggestions react to the latest communication context', () => {
-  const baseline = getSuggestions('', '');
-  const contextual = getSuggestions('I need', 'water');
-  assert.notDeepEqual(contextual, baseline);
-  assert.ok(contextual.every((item) => item.length <= 80));
+test('suggestions preserve reviewed communication contexts', () => {
+  const cases = [
+    [['', 'water'], ['WATER', 'JUICE', 'PLEASE', 'NO THANK YOU']],
+    [['', 'hungry'], ['FOOD', 'YES PLEASE', 'NO THANK YOU', 'MORE']],
+    [['', 'pain'], ['PAIN', 'HELP', 'DOCTOR', 'PLEASE']],
+    [['I need', ''], ['WATER', 'FOOD', 'SLEEP', 'HELP']]
+  ];
+  for (const [input, expected] of cases) {
+    assert.deepEqual(getSuggestions(...input), expected);
+    assert.ok(expected.every((item) => item.length <= 80));
+  }
 });

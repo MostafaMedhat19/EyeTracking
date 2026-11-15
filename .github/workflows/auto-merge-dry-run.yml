@@ -2,11 +2,12 @@ name: Safe auto-merge decision
 
 on:
   workflow_run:
-    workflows: [Pull request readiness]
+    workflows: [Pull request readiness, Quality checks]
     types: [completed]
 
 permissions:
   actions: read
+  checks: read
   contents: read
   pull-requests: read
 
